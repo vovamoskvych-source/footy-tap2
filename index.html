@@ -10,13 +10,18 @@
 body {
   margin: 0;
   font-family: Arial;
-  background: radial-gradient(circle, #064e3b, #022c22);
-  color: white;
   text-align: center;
+  color: white;
+
+  /* ФУТБОЛЬНОЕ ПОЛЕ */
+  background: url("https://i.imgur.com/3ZQ3Z7p.jpg") no-repeat center center;
+  background-size: cover;
 }
 
-.container {
-  margin-top: 30px;
+.overlay {
+  background: rgba(0,0,0,0.6);
+  min-height: 100vh;
+  padding-top: 30px;
 }
 
 h1 {
@@ -24,20 +29,26 @@ h1 {
 }
 
 .player {
-  width: 140px;
-  margin: 20px;
+  width: 160px;
+  margin-top: 20px;
   transition: 0.1s;
+  cursor: pointer;
 }
 
 .score {
   font-size: 28px;
+  margin: 10px;
+}
+
+.energy {
+  margin: 10px;
 }
 
 .energy-bar {
-  width: 200px;
-  height: 15px;
+  width: 220px;
+  height: 14px;
   background: #1f2937;
-  margin: 10px auto;
+  margin: auto;
   border-radius: 10px;
   overflow: hidden;
 }
@@ -49,128 +60,119 @@ h1 {
 }
 
 button {
-  margin-top: 10px;
+  margin-top: 15px;
   font-size: 18px;
-  padding: 12px 20px;
+  padding: 10px 20px;
   border-radius: 12px;
   border: none;
   background: #16a34a;
   color: white;
 }
 
-.shop {
-  margin-top: 20px;
-}
-
-.coin-popup {
+.coin {
   position: absolute;
   color: yellow;
-  font-size: 20px;
-  animation: float 1s ease-out forwards;
+  font-size: 18px;
+  animation: float 1s forwards;
 }
 
 @keyframes float {
-  0% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-50px); }
+  0% {opacity:1; transform:translateY(0);}
+  100% {opacity:0; transform:translateY(-40px);}
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <h1>⚽️ Footy Coin</h1>
+<div class="overlay">
 
-  <!-- Игрушечный игрок -->
-  <div id="player" class="player">🧍‍♂️⚽️</div>
+<h1>⚽️ Footy Coin</h1>
 
-  <div class="score">
-    💰 Coins: <span id="coins">0</span>
-  </div>
+<!-- 👉 ВСТАВЬ СЮДА PALMER -->
+<img id="player" class="player"
+src="https://i.imgur.com/8QfQZ6M.png">
 
-  <div class="energy-bar">
-    <div id="energyFill" class="energy-fill"></div>
-  </div>
-  <div>⚡️ Energy: <span id="energy">100</span>/100</div>
+<div class="score">
+💰 Coins: <span id="coins">0</span>
+</div>
 
-  <button onclick="tap()">KICK ⚽️</button>
+<div class="energy-bar">
+  <div id="energyFill" class="energy-fill"></div>
+</div>
 
-  <div class="shop">
-    <h3>⚙️ Upgrades</h3>
-    <button id="upgradeBtn" onclick="upgrade()">x2 Income (50)</button>
-  </div>
+<div class="energy">
+⚡️ <span id="energy">100</span>/100
+</div>
+
+<button onclick="tap()">KICK ⚽️</button>
+
 </div>
 
 <script>
 let tg = window.Telegram?.WebApp;
-if (tg) tg.ready();
+if (tg) {
+  tg.ready();
+  tg.expand();
+}
 
 let coins = 0;
 let energy = 100;
 let maxEnergy = 100;
 let income = 1;
-let upgradeCost = 50;
 
+// 🔥 КЛИК ПО КНОПКЕ И ИГРОКУ
 function tap() {
   if (energy <= 0) return;
 
   energy--;
   coins += income;
 
-  updateUI();
+  update();
 
   let player = document.getElementById("player");
-  player.style.transform = "rotate(20deg)";
-  setTimeout(() => player.style.transform = "rotate(0deg)", 100);
+  player.style.transform = "scale(1.1) rotate(10deg)";
+  setTimeout(() => {
+    player.style.transform = "scale(1)";
+  }, 100);
 
-  showCoinPopup();
+  showCoin();
 }
 
-function updateUI() {
+// КЛИК ПО КАРТИНКЕ
+document.getElementById("player").onclick = tap;
+
+function update() {
   document.getElementById("coins").innerText = coins;
   document.getElementById("energy").innerText = energy;
 
   let percent = (energy / maxEnergy) * 100;
   document.getElementById("energyFill").style.width = percent + "%";
-
-  document.getElementById("upgradeBtn").innerText =
-    x2 Income (${upgradeCost});
 }
 
-// медленнее энергия
+// ЭНЕРГИЯ МЕДЛЕННЕЕ
 setInterval(() => {
   if (energy < maxEnergy) {
     energy += 1;
-    updateUI();
+    update();
   }
-}, 2000);
+}, 3000);
 
-// апгрейд
-function upgrade() {
-  if (coins >= upgradeCost) {
-    coins -= upgradeCost;
-    income *= 2;
-    upgradeCost *= 2;
+// ЭФФЕКТ МОНЕТ
+function showCoin() {
+  let coin = document.createElement("div");
+  coin.innerText = "+" + income;
+  coin.className = "coin";
 
-    updateUI();
-  }
+  coin.style.left = (window.innerWidth/2 - 10) + "px";
+  coin.style.top = (window.innerHeight/2) + "px";
+
+  document.body.appendChild(coin);
+
+  setTimeout(() => coin.remove(), 1000);
 }
 
-// +монеты анимация
-function showCoinPopup() {
-  let popup = document.createElement("div");
-  popup.innerText = "+" + income;
-  popup.className = "coin-popup";
-
-  popup.style.left = (window.innerWidth / 2 - 10) + "px";
-  popup.style.top = (window.innerHeight / 2) + "px";
-
-  document.body.appendChild(popup);
-
-  setTimeout(() => popup.remove(), 1000);
-}
-
-updateUI();
+update();
 </script>
 
 </body>

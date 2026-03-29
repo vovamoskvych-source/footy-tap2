@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Footy Tap</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      text-align: center;
+      background: #0f172a;
+      color: white;
+    }
+
+    .container {
+      margin-top: 80px;
+    }
+
+    .coin {
+      font-size: 60px;
+      margin: 20px;
+    }
+
+    button {
+      font-size: 30px;
+      padding: 20px 40px;
+      border-radius: 20px;
+      border: none;
+      background: #22c55e;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>⚽️ Footy Tap</h1>
+  <div class="coin">💰</div>
+  <h2 id="score">0</h2>
+
+  <button onclick="tap()">TAP ⚽️</button>
+</div>
+
+<script>
+let tg = window.Telegram.WebApp;
+tg.expand();
+
+let user_id = tg.initDataUnsafe?.user?.id || "demo_user";
+
+// загрузка сохранения
+let score = localStorage.getItem(user_id) || 0;
+score = parseInt(score);
+
+document.getElementById("score").innerText = score;
+
+function tap() {
+    score++;
+    document.getElementById("score").innerText = score;
+
+    // сохраняем
+    localStorage.setItem(user_id, score);
+}
+</script>
+
+</body>
+</html>

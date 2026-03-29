@@ -10,31 +10,46 @@
 body {
   margin: 0;
   font-family: Arial;
-  background: #0f172a;
+  background: linear-gradient(#0f172a, #020617);
   color: white;
   text-align: center;
 }
 
 .container {
-  margin-top: 60px;
+  margin-top: 40px;
+}
+
+h1 {
+  font-size: 30px;
 }
 
 .player {
-  font-size: 80px;
-}
-
-.score {
-  font-size: 50px;
+  width: 150px;
+  transition: 0.1s;
   margin: 20px;
 }
 
+.score {
+  font-size: 30px;
+}
+
+.energy {
+  margin: 10px;
+  font-size: 18px;
+}
+
 button {
-  font-size: 25px;
-  padding: 15px 30px;
+  margin-top: 15px;
+  font-size: 20px;
+  padding: 12px 25px;
   border-radius: 15px;
   border: none;
   background: #22c55e;
   color: white;
+}
+
+.shop {
+  margin-top: 30px;
 }
 </style>
 </head>
@@ -44,13 +59,22 @@ button {
 <div class="container">
   <h1>⚽️ Footy Coin</h1>
 
-  <div class="player">🧑‍🦰⚽️</div>
+  <img id="player" class="player" src="https://i.imgur.com/8QfQZ6M.png">
 
   <div class="score">
-    Coins: <span id="coins">0</span>
+    💰 Coins: <span id="coins">0</span>
+  </div>
+
+  <div class="energy">
+    ⚡️ Energy: <span id="energy">100</span>/100
   </div>
 
   <button onclick="tap()">KICK ⚽️</button>
+
+  <div class="shop">
+    <h2>⚙️ Upgrades</h2>
+    <button onclick="upgrade()">x2 Coins (50)</button>
+  </div>
 </div>
 
 <script>
@@ -58,10 +82,42 @@ let tg = window.Telegram?.WebApp;
 if (tg) tg.ready();
 
 let coins = 0;
+let energy = 100;
+let maxEnergy = 100;
+let income = 1;
 
 function tap() {
-  coins += 1;
+  if (energy <= 0) return;
+
+  energy--;
+  coins += income;
+
   document.getElementById("coins").innerText = coins;
+  document.getElementById("energy").innerText = energy;
+
+  let player = document.getElementById("player");
+  player.style.transform = "rotate(20deg)";
+
+  setTimeout(() => {
+    player.style.transform = "rotate(0deg)";
+  }, 100);
+}
+
+// энергия восстанавливается
+setInterval(() => {
+  if (energy < maxEnergy) {
+    energy++;
+    document.getElementById("energy").innerText = energy;
+  }
+}, 1000);
+
+// апгрейд
+function upgrade() {
+  if (coins >= 50) {
+    coins -= 50;
+    income *= 2;
+    document.getElementById("coins").innerText = coins;
+  }
 }
 </script>
 

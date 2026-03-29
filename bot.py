@@ -2,7 +2,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppI
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 TOKEN = "8690035396:AAFfRrjROUl8L6OkQoG6qhqYUYo-IXT3nvY"
-WEBAPP_URL = "https://footy-tap.vercel.app"
+WEBAPP_URL = "https://footy-tap2.vercel.app/"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [

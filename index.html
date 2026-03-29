@@ -1,66 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Footy Tap</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta charset="UTF-8">
+<title>Footy Coin</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      text-align: center;
-      background: #0f172a;
-      color: white;
-    }
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    .container {
-      margin-top: 80px;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+}
 
-    .coin {
-      font-size: 60px;
-      margin: 20px;
-    }
+.container {
+  margin-top: 60px;
+}
 
-    button {
-      font-size: 30px;
-      padding: 20px 40px;
-      border-radius: 20px;
-      border: none;
-      background: #22c55e;
-      color: white;
-    }
-  </style>
+.player {
+  font-size: 80px;
+}
+
+.score {
+  font-size: 50px;
+  margin: 20px;
+}
+
+button {
+  font-size: 25px;
+  padding: 15px 30px;
+  border-radius: 15px;
+  border: none;
+  background: #22c55e;
+  color: white;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
-  <h1>⚽️ Footy Tap</h1>
-  <div class="coin">💰</div>
-  <h2 id="score">0</h2>
+  <h1>⚽️ Footy Coin</h1>
 
-  <button onclick="tap()">TAP ⚽️</button>
+  <div class="player">🧑‍🦰⚽️</div>
+
+  <div class="score">
+    Coins: <span id="coins">0</span>
+  </div>
+
+  <button onclick="tap()">KICK ⚽️</button>
 </div>
 
 <script>
-let tg = window.Telegram.WebApp;
-tg.expand();
+let tg = window.Telegram?.WebApp;
+if (tg) tg.ready();
 
-let user_id = tg.initDataUnsafe?.user?.id || "demo_user";
-
-// загрузка сохранения
-let score = localStorage.getItem(user_id) || 0;
-score = parseInt(score);
-
-document.getElementById("score").innerText = score;
+let coins = 0;
 
 function tap() {
-    score++;
-    document.getElementById("score").innerText = score;
-
-    // сохраняем
-    localStorage.setItem(user_id, score);
+  coins += 1;
+  document.getElementById("coins").innerText = coins;
 }
 </script>
 

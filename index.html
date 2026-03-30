@@ -3,18 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <title>Footy Coin</title>
+
 <style>
 body {
     margin: 0;
     font-family: Arial;
-    background: linear-gradient(135deg, #0b3d2e, #111);
+    background: radial-gradient(circle at center, #0f5132, #020202);
     color: white;
     text-align: center;
+    overflow: hidden;
+}
+
+/* фон стадиона эффект */
+body::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: repeating-radial-gradient(circle, rgba(0,255,136,0.05) 0px, transparent 2px);
+    animation: moveBg 10s linear infinite;
+}
+
+@keyframes moveBg {
+    from { transform: translate(0,0); }
+    to { transform: translate(-200px,-200px); }
 }
 
 h1 {
     margin-top: 20px;
     color: #00ff88;
+    text-shadow: 0 0 15px #00ff88;
 }
 
 .coins {
@@ -22,16 +40,36 @@ h1 {
     margin: 10px;
 }
 
-.game {
-    margin-top: 40px;
+/* игрок */
+.player-container {
+    margin-top: 30px;
 }
 
+.player {
+    width: 150px;
+    transition: transform 0.2s;
+}
+
+/* анимация удара */
+.kick {
+    transform: rotate(-20deg) scale(1.1);
+}
+
+/* мяч */
+.ball {
+    width: 40px;
+    position: relative;
+    top: -20px;
+    transition: transform 0.2s;
+}
+
+/* полоса */
 .bar {
     position: relative;
     width: 80%;
     height: 30px;
-    background: #333;
-    margin: 40px auto;
+    background: #222;
+    margin: 30px auto;
     border-radius: 15px;
     overflow: hidden;
 }
@@ -41,7 +79,7 @@ h1 {
     left: 45%;
     width: 10%;
     height: 100%;
-    background: rgba(0, 255, 136, 0.4);
+    background: rgba(0, 255, 136, 0.5);
 }
 
 .slider {
@@ -52,44 +90,43 @@ h1 {
     left: 0;
 }
 
+/* кнопка */
 button {
-    padding: 15px 30px;
-    font-size: 18px;
-    background: #00ff88;
+    padding: 15px 40px;
+    font-size: 20px;
+    background: linear-gradient(45deg, #00ff88, #00ccff);
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
     margin-top: 20px;
+    color: black;
+    font-weight: bold;
 }
 
 button:active {
     transform: scale(0.95);
 }
 
-.player {
-    font-size: 20px;
-    margin-top: 20px;
-    opacity: 0.8;
-}
 </style>
 </head>
 
 <body>
 
 <h1>⚽️ Footy Coin</h1>
-
 <div class="coins">💰 Coins: <span id="coins">0</span></div>
 
-<div class="player">Player: Palmer 🔥</div>
-
-<div class="game">
-    <div class="bar">
-        <div class="green-zone"></div>
-        <div class="slider" id="slider"></div>
-    </div>
-
-    <button onclick="hit()">KICK ⚽️</button>
+<div class="player-container">
+    <img src="https://i.imgur.com/6XKQF9E.png" class="player" id="player">
+    <br>
+    <img src="https://i.imgur.com/W4bQp3I.png" class="ball" id="ball">
 </div>
+
+<div class="bar">
+    <div class="green-zone"></div>
+    <div class="slider" id="slider"></div>
+</div>
+
+<button onclick="hit()">KICK ⚽️</button>
 
 <script>
 let coins = 0;
@@ -98,6 +135,8 @@ let direction = 1;
 
 const slider = document.getElementById("slider");
 const coinText = document.getElementById("coins");
+const player = document.getElementById("player");
+const ball = document.getElementById("ball");
 
 // движение полосы
 setInterval(() => {
@@ -110,15 +149,20 @@ setInterval(() => {
 }, 10);
 
 function hit() {
-    // зелёная зона 45% - 55%
+    // анимация игрока
+    player.classList.add("kick");
+    ball.style.transform = "translateY(-40px)";
+
+    setTimeout(() => {
+        player.classList.remove("kick");
+        ball.style.transform = "translateY(0)";
+    }, 200);
+
+    // логика
     if (pos >= 45 && pos <= 55) {
         coins += 1;
-        alert("🔥 Perfect! +1 Coin");
     } else if (pos >= 35 && pos <= 65) {
         coins += 0.3;
-        alert("👍 Good! +0.3 Coin");
-    } else {
-        alert("❌ Miss!");
     }
 
     coinText.innerText = coins.toFixed(1);

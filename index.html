@@ -13,40 +13,34 @@ body {
     text-align: center;
 }
 
-/* заголовок */
 h1 {
     margin-top: 20px;
     color: #00ff88;
 }
 
-/* монеты */
 .coins {
     font-size: 24px;
     margin: 10px;
 }
 
-/* игрок (пока просто блок) */
+/* игрок картинка */
 .player {
-    width: 100px;
-    height: 150px;
-    background: #00ff88;
     margin: 20px auto;
-    border-radius: 10px;
+}
+
+.player img {
+    width: 110px;
+    height: auto;
     transition: transform 0.2s;
 }
 
-/* анимация удара */
 .kick {
-    transform: rotate(-20deg);
+    transform: rotate(-15deg);
 }
 
 /* мяч */
-.ball {
-    width: 30px;
-    height: 30px;
-    background: white;
-    border-radius: 50%;
-    margin: 10px auto;
+.ball img {
+    width: 35px;
     transition: transform 0.2s;
 }
 
@@ -92,10 +86,16 @@ button {
 <body>
 
 <h1>⚽️ Footy Coin</h1>
+
 <div class="coins">💰 Coins: <span id="coins">0</span></div>
 
-<div class="player" id="player"></div>
-<div class="ball" id="ball"></div>
+<div class="player" id="player">
+    <img src="img/player.jpg">
+</div>
+
+<div class="ball">
+    <img src="img/ball.avif">
+</div>
 
 <div class="bar">
     <div class="green-zone"></div>
@@ -111,8 +111,7 @@ let direction = 1;
 
 const slider = document.getElementById("slider");
 const coinText = document.getElementById("coins");
-const player = document.getElementById("player");
-const ball = document.getElementById("ball");
+const player = document.getElementById("player img");
 
 // движение полосы
 setInterval(() => {
@@ -125,16 +124,14 @@ setInterval(() => {
 }, 10);
 
 function hit() {
-    // анимация
+    // анимация игрока
     player.classList.add("kick");
-    ball.style.transform = "translateY(-20px)";
 
     setTimeout(() => {
         player.classList.remove("kick");
-        ball.style.transform = "translateY(0)";
     }, 200);
 
-    // логика
+    // логика награды
     if (pos >= 45 && pos <= 55) {
         coins += 1;
     } else if (pos >= 35 && pos <= 65) {

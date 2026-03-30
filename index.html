@@ -8,70 +8,56 @@
 body {
     margin: 0;
     font-family: Arial;
-    background: radial-gradient(circle at center, #0f5132, #020202);
+    background: radial-gradient(circle, #0f5132, #000);
     color: white;
     text-align: center;
-    overflow: hidden;
 }
 
-/* фон стадиона эффект */
-body::before {
-    content: "";
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    background: repeating-radial-gradient(circle, rgba(0,255,136,0.05) 0px, transparent 2px);
-    animation: moveBg 10s linear infinite;
-}
-
-@keyframes moveBg {
-    from { transform: translate(0,0); }
-    to { transform: translate(-200px,-200px); }
-}
-
+/* заголовок */
 h1 {
     margin-top: 20px;
     color: #00ff88;
-    text-shadow: 0 0 15px #00ff88;
 }
 
+/* монеты */
 .coins {
     font-size: 24px;
     margin: 10px;
 }
 
-/* игрок */
-.player-container {
-    margin-top: 30px;
-}
-
+/* игрок (пока просто блок) */
 .player {
-    width: 150px;
+    width: 100px;
+    height: 150px;
+    background: #00ff88;
+    margin: 20px auto;
+    border-radius: 10px;
     transition: transform 0.2s;
 }
 
 /* анимация удара */
 .kick {
-    transform: rotate(-20deg) scale(1.1);
+    transform: rotate(-20deg);
 }
 
 /* мяч */
 .ball {
-    width: 40px;
-    position: relative;
-    top: -20px;
+    width: 30px;
+    height: 30px;
+    background: white;
+    border-radius: 50%;
+    margin: 10px auto;
     transition: transform 0.2s;
 }
 
-/* полоса */
+/* шкала */
 .bar {
     position: relative;
     width: 80%;
-    height: 30px;
+    height: 25px;
     background: #222;
     margin: 30px auto;
-    border-radius: 15px;
-    overflow: hidden;
+    border-radius: 10px;
 }
 
 .green-zone {
@@ -79,7 +65,7 @@ h1 {
     left: 45%;
     width: 10%;
     height: 100%;
-    background: rgba(0, 255, 136, 0.5);
+    background: #00ff88;
 }
 
 .slider {
@@ -92,22 +78,15 @@ h1 {
 
 /* кнопка */
 button {
-    padding: 15px 40px;
-    font-size: 20px;
-    background: linear-gradient(45deg, #00ff88, #00ccff);
+    padding: 15px 30px;
+    font-size: 18px;
+    background: #00ff88;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
-    margin-top: 20px;
-    color: black;
-    font-weight: bold;
 }
-
-button:active {
-    transform: scale(0.95);
-}
-
 </style>
+
 </head>
 
 <body>
@@ -115,18 +94,15 @@ button:active {
 <h1>⚽️ Footy Coin</h1>
 <div class="coins">💰 Coins: <span id="coins">0</span></div>
 
-<div class="player-container">
-    <img src="https://i.imgur.com/6XKQF9E.png" class="player" id="player">
-    <br>
-    <img src="https://i.imgur.com/W4bQp3I.png" class="ball" id="ball">
-</div>
+<div class="player" id="player"></div>
+<div class="ball" id="ball"></div>
 
 <div class="bar">
     <div class="green-zone"></div>
     <div class="slider" id="slider"></div>
 </div>
 
-<button onclick="hit()">KICK ⚽️</button>
+<button onclick="hit()">KICK</button>
 
 <script>
 let coins = 0;
@@ -149,9 +125,9 @@ setInterval(() => {
 }, 10);
 
 function hit() {
-    // анимация игрока
+    // анимация
     player.classList.add("kick");
-    ball.style.transform = "translateY(-40px)";
+    ball.style.transform = "translateY(-20px)";
 
     setTimeout(() => {
         player.classList.remove("kick");

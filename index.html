@@ -188,6 +188,15 @@ let coins = Number(localStorage.getItem("coins")) || 0;
 let pos = 0;
 let dir = 1;
 
+let level = 1;
+let speed = 2;
+
+let zoneLeft = 40;
+let zoneSize = 25;
+
+let gameActive = false;
+let failed = false;
+
 function updateCoins() {
     document.getElementById("coins").innerText = coins.toFixed(1) + " FC";
     localStorage.setItem("coins", coins);
@@ -195,53 +204,110 @@ function updateCoins() {
 
 updateCoins();
 
-// плавное движение (лучше чем setInterval)
+// новая зона каждый раунд
+function newRound() {
+    pos = 0;
+    dir = 1;
+    failed = false;
+    gameActive = true;
+
+    zoneLeft = Math.random() * 50 + 20; // 20–70%
+    
+    const green = document.querySelector(".green");
+    green.style.left = zoneLeft + "%";
+    green.style.width = zoneSize + "%";
+
+    document.getElementById("result").innerText = "⚽ Tap at perfect moment!";
+}
+
+// анимация стрелки
 function animate() {
-    pos += dir * 1.8;
+    if (gameActive) {
+        pos += dir * speed;
 
-    if (pos >= 95) dir = -1;
-    if (pos <= 0) dir = 1;
+        if (pos >= 100) {
+            miss();
+        }
 
-    const slider = document.getElementById("slider");
-    if (slider) slider.style.left = pos + "%";
+        const slider = document.getElementById("slider");
+        if (slider) slider.style.left = pos + "%";
+    }
 
     requestAnimationFrame(animate);
 }
 animate();
 
-// open/close
+// удар
+function kick() {
+    if (!gameActive) return;
+
+    let hitStart = zoneLeft;
+    let hitEnd = zoneLeft + zoneSize;
+
+    if (pos >= hitStart && pos <= hitEnd) {
+        win();
+    } else {
+        miss();
+    }
+}
+
+function win() {
+    gameActive = false;
+
+    let reward = level * 0.5;
+    coins += reward;
+
+    document.getElementById("result").innerText =
+        "🔥 PERFECT! +" + reward.toFixed(1);
+
+    levelUp();
+    updateCoins();
+
+    setTimeout(newRound, 1200);
+}
+
+function miss() {
+    if (!gameActive) return;
+
+    gameActive = false;
+
+    document.getElementById("result").innerText =
+        "❌ MISS! Level reset";
+
+    level = 1;
+    speed = 2;
+    zoneSize = 25;
+
+    setTimeout(newRound, 1200);
+}
+
+function levelUp() {
+    level++;
+
+    // усложнение
+    speed += 0.3;
+
+    if (zoneSize > 8) {
+        zoneSize -= 1.5;
+    }
+}
+
 function openGame() {
     document.getElementById("main").style.display = "none";
     document.getElementById("gameScreen").style.display = "block";
+
+    level = 1;
+    speed = 2;
+    zoneSize = 25;
+
+    newRound();
 }
 
 function closeGame() {
     document.getElementById("main").style.display = "block";
     document.getElementById("gameScreen").style.display = "none";
-}
 
-// kick logic (тайминг система)
-function kick() {
-    const result = document.
-getElementById("result");
-
-    let reward = 0;
-
-    if (pos >= 45 && pos <= 55) {
-        reward = 1;
-        result.innerHTML = "🔥 PERFECT +1 FC";
-    } 
-    else if (pos >= 35 && pos <= 65) {
-        reward = 0.4;
-        result.innerHTML = "👌 GOOD +0.4 FC";
-    } 
-    else {
-        reward = 0;
-        result.innerHTML = "❌ MISS";
-    }
-
-    coins += reward;
-    updateCoins();
+    gameActive = false;
 }
 </script>
 

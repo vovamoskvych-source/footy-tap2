@@ -1,3 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Footy Coin</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: radial-gradient(circle at top, #0f172a, #020617);
+    color: white;
+}
+
+/* контейнер */
+.container {
+    padding: 15px;
+}
+
+/* glass карточки */
+.card {
+    background: rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 15px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 20px rgba(0,255,136,0.05);
+}
+
+/* баланс */
+.balance {
+    font-size: 34px;
+    font-weight: bold;
+    color: #00ff88;
+}
+
+/* кнопки */
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.actions button {
+    flex: 1;
+    padding: 15px;
+    border-radius: 15px;
+    border: none;
+    background: rgba(255,255,255,0.05);
+    color: white;
+    transition: 0.2s;
+}
+
+.actions button:hover {
+    background: rgba(0,255,136,0.2);
+}
+
+/* main button */
+.main-btn {
+    margin-top: 15px;
+    width: 100%;
+    padding: 18px;
+    border-radius: 15px;
+    border: none;
+    background: linear-gradient(90deg, #00ff88, #00cc66);
+    color: black;
+    font-weight: bold;
+}
+
+/* меню */
+.menu {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.menu button {
+    background: rgba(255,255,255,0.05);
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.play {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00ff88, #00cc66);
+    font-size: 26px;
+    transform: translateY(-20px);
+    box-shadow: 0 0 25px #00ff88;
+}
+
+/* GAME */
+#gameScreen {
+    display: none;
+    padding: 20px;
+    text-align: center;
+}
+
+.bar {
+    margin: 30px auto;
+    width: 80%;
+    height: 25px;
+    background: #222;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.green {
+    position: absolute;
+    left: 40%;
+    width: 20%;
+    height: 100%;
+    background: #00ff88;
+    opacity: 0.7;
+}
+
+.slider {
+    position: absolute;
+    width: 6px;
+    height: 100%;
+    background: white;
+    box-shadow: 0 0 10px white;
+}
+
+button {
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container" id="main">
+
+    <div class="card">
+        <div>Баланс</div>
+        <div class="balance" id="coins">0 FC</div>
+    </div>
+
+    <div class="card">
+        <div class="actions">
+            <button>⬆️</button>
+            <button>💰</button>
+            <button>📊</button>
+        </div>
+
+        <button class="main-btn">💡 Upgrade soon</button>
+    </div>
+
+</div>
+
+<!-- GAME -->
+<div id="gameScreen">
+
+    <h2>⚽ Timing Shot</h2>
+
+    <div class="bar">
+        <div class="green"></div>
+        <div class="slider" id="slider"></div>
+    </div>
+
+    <button onclick="kick()" class="main-btn">KICK ⚽</button>
+
+    <p id="result"></p>
+
+    <button onclick="closeGame()">⬅ Back</button>
+</div>
+
+<!-- MENU -->
+<div class="menu">
+    <button>💰</button>
+    <button>👥</button>
+    <button class="play" onclick="openGame()">⚽</button>
+    <button>🛒</button>
+    <button>👤</button>
+</div>
+
+<script>
+let coins = Number(localStorage.getItem("coins")) || 0;
+
+let pos = 0;
+let dir = 1;
+
+function updateCoins() {
+    document.getElementById("coins").innerText = coins.toFixed(1) + " FC";
+    localStorage.setItem("coins", coins);
+}
+
+updateCoins();
+
+// плавное движение (лучше чем setInterval)
+function animate() {
+    pos += dir * 1.8;
+
+    if (pos >= 95) dir = -1;
+    if (pos <= 0) dir = 1;
+
+    const slider = document.getElementById("slider");
+    if (slider) slider.style.left = pos + "%";
+
+    requestAnimationFrame(animate);
+}
+animate();
+
+// open/close
+function openGame() {
+    document.getElementById("main").style.display = "none";
+    document.getElementById("gameScreen").style.display = "block";
+}
+
+function closeGame() {
+    document.getElementById("main").style.display = "block";
+    document.getElementById("gameScreen").style.display = "none";
+}
+
+// kick logic (тайминг система)
+function kick() {
+    const result = document.
 getElementById("result");
 
     let reward = 0;
@@ -22,3 +247,4 @@ getElementById("result");
 
 </body>
 </html>
+    

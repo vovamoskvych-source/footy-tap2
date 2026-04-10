@@ -32,10 +32,6 @@ body {
     font-weight: bold;
 }
 
-.small {
-    opacity: 0.6;
-}
-
 /* кнопки */
 .actions {
     display: flex;
@@ -64,60 +60,115 @@ body {
     font-size: 18px;
 }
 
-/* нижнее меню */
+/* меню */
 .menu {
     position: fixed;
-    bottom: 0;
+    bottom: 10px;
     width: 100%;
     display: flex;
-    background: rgba(0,0,0,0.8);
+    justify-content: space-around;
+    align-items: center;
 }
 
+/* обычные кнопки */
 .menu button {
-    flex: 1;
-    padding: 15px;
+    background: rgba(255,255,255,0.05);
     border: none;
-    background: none;
     color: white;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+/* центральная кнопка */
+.play {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00ff88, #00cc66);
+    font-size: 26px;
+    transform: translateY(-20px);
+    box-shadow: 0 0 20px #00ff88;
+}
+
+/* игра */
+#gameScreen {
+    display: none;
+    padding: 20px;
+    text-align: center;
+}
+
+.bar {
+    margin: 30px auto;
+    width: 80%;
+    height: 25px;
+    background: #222;
+    border-radius: 10px;
+    position: relative;
+}
+
+.green {
+    position: absolute;
+    left: 45%;
+    width: 10%;
+    height: 100%;
+    background: #00ff88;
+}
+
+.slider {
+    position: absolute;
+    width: 5px;
+    height: 100%;
+    background: white;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<!-- ГЛАВНЫЙ ЭКРАН -->
+<div class="container" id="main">
 
-    <!-- баланс -->
     <div class="card">
-        <div class="small">Общий баланс</div>
+        <div>Баланс</div>
         <div class="balance" id="coins">0 FC</div>
     </div>
 
-    <!-- действия -->
     <div class="card">
         <div class="actions">
-            <button onclick="alert('вывод')">⬆️ Вывод</button>
-            <button onclick="alert('холд')">💰 Холд</button>
-            <button onclick="alert('задания')">📋 Задания</button>
+            <button>⬆️</button>
+            <button>💰</button>
+            <button>📋</button>
         </div>
 
         <button class="main-btn">💡 Как заработать?</button>
     </div>
 
-    <!-- игра -->
-    <div class="card">
-        <div>⚽ Мини игра</div>
-        <button class="main-btn" onclick="openGame()">Играть</button>
+</div>
+
+<!-- ЭКРАН ИГРЫ -->
+<div id="gameScreen">
+
+    <h2>⚽ Игра</h2>
+
+    <div class="bar">
+        <div class="green"></div>
+        <div class="slider" id="slider"></div>
     </div>
+
+    <button onclick="kick()">KICK</button>
+
+    <p id="result"></p>
+
+    <button onclick="closeGame()">⬅ Назад</button>
 
 </div>
 
-<!-- нижнее меню -->
+<!-- МЕНЮ -->
 <div class="menu">
     <button>💰</button>
     <button>👥</button>
 
-    <button class="play" onclick="openGame()">⚽️</button>
+    <button class="play" onclick="openGame()">⚽</button>
 
     <button>🛒</button>
     <button>👤</button>
@@ -125,13 +176,52 @@ body {
 
 <script>
 let coins = 0;
+let pos = 0;
+let dir = 1;
 
+// обновление баланса
 function update() {
-    document.getElementById("coins").innerText = coins + " FC";
+    document.getElementById("coins").innerText = coins.toFixed(1) + " FC";
 }
 
+// движение полосы
+setInterval(() => {
+    pos += dir * 2;
+
+    if (pos >= 95) dir = -1;
+    if (pos <= 0) dir = 1;
+
+    const slider = document.getElementById("slider");
+    if (slider) slider.style.left = pos + "%";
+}, 10);
+
+// открыть игру
 function openGame() {
-    alert("Дальше сюда вставим твою игру с таймингом ⚽");
+    document.getElementById("main").style.display = "none";
+    document.getElementById("gameScreen").style.display = "block";
+}
+
+// закрыть игру
+function closeGame() {
+    document.getElementById("main").style.display = "block";
+    document.getElementById("gameScreen").style.display = "none";
+}
+
+// удар
+function kick() {
+    const result = document.getElementById("result");
+
+    if (pos >= 45 && pos <= 55) {
+        coins += 1;
+        result.innerText = "🔥 PERFECT +1";
+    } else if (pos >= 35 && pos <= 65) {
+        coins += 0.3;
+        result.innerText = "👌 GOOD +0.3";
+    } else {
+        result.innerText = "❌ MISS";
+    }
+
+    update();
 }
 </script>
 

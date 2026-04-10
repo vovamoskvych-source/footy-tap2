@@ -8,82 +8,140 @@
 body {
     margin: 0;
     font-family: Arial;
-    background: radial-gradient(circle, #0f5132, #000);
+    background: linear-gradient(#0f5132, #000);
     color: white;
     text-align: center;
 }
 
-h1 {
-    margin-top: 20px;
+/* баланс */
+.header {
+    padding: 20px;
+    font-size: 24px;
     color: #00ff88;
 }
 
-.menu {
+/* игрок */
+.player {
     margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
 }
 
-button {
-    width: 220px;
-    padding: 15px;
-    font-size: 18px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
+.player img {
+    width: 120px;
+}
+
+/* мяч */
+.ball {
+    margin-top: 20px;
+}
+
+.ball img {
+    width: 50px;
+}
+
+/* кнопка игры */
+.play-btn {
+    margin-top: 20px;
+    padding: 15px 30px;
     background: #00ff88;
     color: black;
-    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
 }
 
+/* экран */
 .screen {
-    margin-top: 20px;
-    font-size: 18px;
-    min-height: 60px;
+    margin-top: 15px;
+    font-size: 16px;
+}
+
+/* нижнее меню */
+.menu {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    background: #111;
+}
+
+.menu button {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    background: #222;
+    color: white;
+}
+
+.menu button:hover {
+    background: #00ff88;
+    color: black;
 }
 </style>
 </head>
 
 <body>
 
-<h1>⚽️ Footy Coin</h1>
-
-<div class="menu">
-    <button onclick="launch()">🚀 LAUNCH</button>
-    <button onclick="balance()">💰 Баланс</button>
-    <button onclick="play()">🎮 Играть</button>
-    <button onclick="upgrades()">📈 Апгрейды</button>
-    <button onclick="top()">🏆 Топ</button>
+<div class="header">
+💰 <span id="coins">0</span> Footy Coins
 </div>
 
+<div class="player">
+<img src="https://i.imgur.com/7yUvePI.png">
+</div>
+
+<div class="ball">
+<img src="https://i.imgur.com/JYUB0m3.png">
+</div>
+
+<button class="play-btn" onclick="kick()">⚽️ TAP</button>
+
 <div class="screen" id="screen">
-    Добро пожаловать в Footy Coin ⚽️
+Нажимай и набивай мяч
+</div>
+
+<div class="menu">
+<button onclick="tab('wallet')">💰</button>
+<button onclick="tab('ref')">👥</button>
+<button onclick="tab('game')">🎮</button>
+<button onclick="tab('shop')">🛒</button>
+<button onclick="tab('profile')">👤</button>
 </div>
 
 <script>
 let coins = 0;
 
-function launch() {
-    document.getElementById("screen").innerText = "🚀 Игра запущена!";
+function update() {
+    document.getElementById("coins").innerText = coins;
 }
 
-function balance() {
-    document.getElementById("screen").innerText = "💰 Баланс: " + coins + " coins";
-}
-
-function play() {
+function kick() {
     coins += 1;
-    document.getElementById("screen").innerText = "🎮 +1 coin! Сейчас: " + coins;
+    update();
+    document.getElementById("screen").innerText = "⚽️ Удар! +1 coin";
 }
 
-function upgrades() {
-    document.getElementById("screen").innerText = "📈 Апгрейды скоро будут!";
-}
+function tab(name) {
+    const screen = document.getElementById("screen");
 
-function top() {
-    document.getElementById("screen").innerText = "🏆 Лидерборд в разработке!";
+    if (name === "wallet") {
+        screen.innerText = "💰 Баланс: " + coins;
+    }
+
+    if (name === "ref") {
+        screen.innerText = "👥 Приглашай друзей!";
+    }
+
+    if (name === "game") {
+        screen.innerText = "🎮 Игра активна";
+    }
+
+    if (name === "shop") {
+        screen.innerText = "🛒 Магазин скоро";
+    }
+
+    if (name === "profile") {
+        screen.innerText = "👤 Профиль";
+    }
 }
 </script>
 

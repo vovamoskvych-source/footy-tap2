@@ -12,7 +12,7 @@ body {
     color: white;
 }
 
-/* MAIN UI */
+/* MAIN */
 .container {
     padding: 15px;
 }
@@ -55,43 +55,59 @@ body {
     transform: translateY(-20px);
 }
 
-/* GAME FULL SCREEN */
+/* GAME FULL */
 #gameScreen {
     display: none;
     position: fixed;
     inset: 0;
-    background: linear-gradient(#1db954, #0f7a3b);
+    overflow: hidden;
 }
 
-/* поле линии */
-.field-lines {
+/* ПОЛЕ */
+.field {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-image: linear-gradient(rgba(255,255,255,0.1) 2px, transparent 2px);
-    background-size: 100% 60px;
+    background: linear-gradient(#2ecc71, #27ae60);
+}
+
+/* линии поля */
+.field::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background:
+        linear-gradient(white, white) center/2px 100% no-repeat,
+        radial-gradient(circle at center, transparent 60px, white 62px, white 64px, transparent 66px);
+    opacity: 0.3;
 }
 
 /* игрок */
 .player {
     position: absolute;
-    bottom: 80px;
+    bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 70px;
 }
 
-/* мяч */
+/* МЯЧ КРАСИВЫЙ */
 .ball {
     position: absolute;
-    bottom: 140px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 30% 30%, white, #ddd),
+        repeating-linear-gradient(60deg, black 0 5px, white 5px 10px);
+    bottom: 180px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 40px;
 }
 
-/* UI игры */
-.game-ui {
+/* UI */
+.ui {
     position: absolute;
     top: 20px;
     width: 100%;
@@ -121,17 +137,17 @@ button {
 <!-- GAME -->
 <div id="gameScreen">
 
-    <div class="field-lines"></div>
+    <div class="field"></div>
 
     <div class="player">🧍‍♂️</div>
-    <div class="ball" id="ball">⚽</div>
+    <div class="ball" id="ball"></div>
 
-    <div class="game-ui">
+    <div class="ui">
         <h2>⚽ Набивание</h2>
         <button id="startBtn" onclick="startGame()">▶ START</button>
         <p id="score">0</p>
         <p id="status"></p>
-        <button onclick="kick()" id="kickBtn" style="display:none;">KICK</button>
+        <button id="kickBtn" onclick="kick()" style="display:none;">KICK</button>
         <br><br>
         <button onclick="closeGame()">⬅ Назад</button>
     </div>
@@ -139,7 +155,7 @@ button {
 </div>
 
 <!-- MENU -->
-<div class="menu">
+<div class="menu" id="menu">
     <button>💰</button>
     <button>👥</button>
     <button class="play" onclick="openGame()">⚽</button>
@@ -151,9 +167,9 @@ button {
 let coins = Number(localStorage.getItem("coins")) || 0;
 let score = 0;
 
-let ballY = 140;
+let ballY = 180;
 let velocity = 0;
-let gravity = -0.6;
+let gravity = -0.4;
 
 let playing = false;
 
@@ -165,18 +181,20 @@ updateCoins();
 function openGame() {
     document.getElementById("main").style.display = "none";
     document.getElementById("gameScreen").style.display = "block";
+    document.getElementById("menu").style.display = "none";
 }
 
 function closeGame() {
     document.getElementById("main").style.display = "block";
     document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("menu").style.display = "flex";
     playing = false;
 }
 
 /* старт */
 function startGame() {
     score = 0;
-    ballY = 140;
+    ballY = 180;
     velocity = 0;
     playing = true;
 
@@ -189,12 +207,10 @@ function startGame() {
 
 /* физика */
 function loop() {
-    if (!playing) return;
-
-    velocity += gravity;
+    if (!playing) return;velocity += gravity;
     ballY += velocity;
 
-    if (ballY <= 80) {
+    if (ballY <= 100) {
         lose();
         return;
     }
@@ -208,7 +224,7 @@ function loop() {
 function kick() {
     if (!playing) return;
 
-    velocity = 8; // прыжок вверх
+    velocity = 7;
     score++;
 
     coins += 1;
@@ -221,8 +237,7 @@ function kick() {
 function lose() {
     playing = false;
 
-    document.getElementById("status").
- innerText =
+    document.getElementById("status").innerText =
         "❌ Упал! Счёт: " + score;
 
     document.getElementById("startBtn").style.display = "inline-block";
@@ -231,4 +246,4 @@ function lose() {
 </script>
 
 </body>
-</html>   
+</html>

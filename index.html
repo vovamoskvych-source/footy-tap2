@@ -8,145 +8,80 @@
 body {
     margin: 0;
     font-family: Arial;
-    background: radial-gradient(circle at top, #0f172a, #020617);
+    background: #0b1220;
     color: white;
-}
-
-/* контейнер */
-.container {
-    padding: 15px;
-}
-
-/* карточки */
-.card {
-    background: rgba(255,255,255,0.06);
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 15px;
-    backdrop-filter: blur(12px);
-}
-
-/* баланс */
-.balance {
-    font-size: 34px;
-    font-weight: bold;
-    color: #00ff88;
-}
-
-/* кнопки */
-.actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.actions button {
-    flex: 1;
-    padding: 15px;
-    border-radius: 15px;
-    border: none;
-    background: rgba(255,255,255,0.05);
-    color: white;
-}
-
-/* главная кнопка */
-.main-btn {
-    margin-top: 15px;
-    width: 100%;
-    padding: 18px;
-    border-radius: 15px;
-    border: none;
-    background: linear-gradient(90deg, #00ff88, #00cc66);
-    color: black;
-    font-weight: bold;
-}
-
-/* меню */
-.menu {
-    position: fixed;
-    bottom: 10px;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.menu button {
-    background: rgba(255,255,255,0.05);
-    border: none;
-    color: white;
-    padding: 12px;
-    border-radius: 12px;
-}
-
-.play {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #00ff88, #00cc66);
-    font-size: 26px;
-    transform: translateY(-20px);
-    box-shadow: 0 0 25px #00ff88;
-}
-
-/* GAME */
-#gameScreen {
-    display: none;
-    padding: 20px;
     text-align: center;
 }
 
-.player {
+/* главный экран */
+.container {
+    padding: 20px;
+}
+
+.balance {
+    font-size: 30px;
+    color: #00ff88;
+}
+
+/* экран игры */
+#gameScreen {
+    display: none;
+}
+
+/* поле */
+.field {
+    background: linear-gradient(#1e7f3f, #14532d);
+    height: 300px;
     position: relative;
-    height: 120px;
     margin-top: 20px;
+    border-radius: 20px;
 }
 
-.man {
-    font-size: 60px;
+/* игрок */
+.player {
     position: absolute;
-    bottom: 0;
+    bottom: 20px;
     left: 45%;
-    transition: transform 0.2s;
+    font-size: 70px;
 }
 
+/* мяч */
 .ball {
-    font-size: 40px;
     position: absolute;
-    bottom: 0;
+    bottom: 20px;
     left: 55%;
-    transition: 0.2s;
+    font-size: 40px;
 }
 
-.kick {
-    transform: rotate(-20deg) scale(1.2);
+/* кнопка */
+button {
+    margin-top: 20px;
+    padding: 15px 25px;
+    border-radius: 12px;
+    border: none;
+    background: #00ff88;
+    font-size: 18px;
 }
 
-.ball-kick {
-    transform: translateY(-50px) translateX(30px);
-}
-
+/* тайминг бар */
 .bar {
-    margin: 30px auto;
+    margin: 20px auto;
     width: 80%;
-    height: 25px;
+    height: 20px;
     background: #222;
     border-radius: 10px;
     position: relative;
-    overflow: hidden;
 }
 
 .green {
     position: absolute;
-    left: 40%;
-    width: 20%;
     height: 100%;
     background: #00ff88;
 }
 
 .slider {
     position: absolute;
-    width: 6px;
+    width: 5px;
     height: 100%;
     background: white;
 }
@@ -156,58 +91,46 @@ body {
 <body>
 
 <div class="container" id="main">
-    <div class="card">
-        <div>Баланс</div>
-        <div class="balance" id="coins">0 FC</div>
-    </div>
+    <h2>Footy Coin</h2>
+    <div class="balance" id="coins">0 FC</div>
 
-    <div class="card">
-        <button class="main-btn">💡 Скоро апгрейды</button>
-    </div>
+    <button onclick="openGame()">⚽ Играть</button>
 </div>
 
-<!-- GAME -->
+<!-- экран игры -->
 <div id="gameScreen">
 
-    <h2>⚽ Skill Shot</h2>
+    <h2>⚽ Палмер</h2>
 
-    <div class="player">
-        <div class="ball" id="ball">⚽</div>
-        <div class="man" id="man">🧍</div>
+    <div class="field">
+        <div class="player">🧍‍♂️</div>
+        <div class="ball">⚽</div>
     </div>
 
-    <div class="bar">
-        <div class="green"></div>
+    <button onclick="startGame()">▶ START</button>
+
+    <div class="bar" id="bar" style="display:none;">
+        <div class="green" id="green"></div>
         <div class="slider" id="slider"></div>
     </div>
 
-    <button onclick="kick()" class="main-btn">KICK ⚽</button>
+    <button onclick="kick()" id="kickBtn" style="display:none;">KICK</button>
 
     <p id="result"></p>
 
     <button onclick="closeGame()">⬅ Назад</button>
-</div>
 
-<!-- MENU -->
-<div class="menu">
-    <button>💰</button>
-    <button>👥</button>
-    <button class="play" onclick="openGame()">⚽</button>
-    <button>🛒</button>
-    <button>👤</button>
 </div>
 
 <script>
 let coins = Number(localStorage.getItem("coins")) || 0;
 
 let pos = 0;
-let level = 1;
-let speed = 2;
+let speed = 1;
+let zoneSize = 40;
+let zoneLeft = 30;
 
-let zoneLeft = 40;
-let zoneSize = 25;
-
-let gameActive = false;
+let playing = false;
 
 function updateCoins() {
     document.getElementById("coins").innerText = coins.toFixed(1) + " FC";
@@ -215,27 +138,44 @@ function updateCoins() {
 }
 updateCoins();
 
-// новый раунд
-function newRound() {
-    pos = 0;
-    gameActive = true;
-
-    zoneLeft = Math.random() * 50 + 20;
-
-    const green = document.querySelector(".green");
-    green.style.left = zoneLeft + "%";
-    green.style.width = zoneSize + "%";
-
-    document.getElementById("result").innerText = "⚽ ЖМИ В НУЖНЫЙ МОМЕНТ!";
+function openGame() {
+    document.getElementById("main").style.display = "none";
+    document.getElementById("gameScreen").style.display = "block";
 }
 
-// анимация
+function closeGame() {
+    document.getElementById("main").style.display = "block";
+    document.getElementById("gameScreen").style.display = "none";
+}
+
+/* НАЧАТЬ ИГРУ */
+function startGame() {
+    document.getElementById("bar").style.display = "block";
+    document.getElementById("kickBtn").style.display = "inline-block";
+
+    nextRound();
+}
+
+/* новый раунд */
+function nextRound() {
+    pos = 0;
+    playing = true;
+
+    zoneLeft = Math.random() * 40 + 30;
+
+    document.getElementById("green").style.left = zoneLeft + "%";
+    document.getElementById("green").style.width = zoneSize + "%";
+
+    document.getElementById("result").innerText = "ЖМИ В НУЖНЫЙ МОМЕНТ";
+}
+
+/* движение */
 function animate() {
-    if (gameActive) {
+    if (playing) {
         pos += speed;
 
         if (pos >= 100) {
-miss();
+            lose();
         }
 
         document.getElementById("slider").style.left = pos + "%";
@@ -245,79 +185,45 @@ miss();
 }
 animate();
 
-// удар
+/* удар */
 function kick() {
-    if (!gameActive) return;
+    if (!playing) return;
 
-    const man = document.getElementById("man");
-    const ball = document.getElementById("ball");
+    let start = zoneLeft;
+    let end = zoneLeft + zoneSize;
 
-    man.classList.add("kick");
-    ball.classList.add("ball-kick");
-
-    setTimeout(() => {
-        man.classList.remove("kick");
-        ball.classList.remove("ball-kick");
-    }, 200);
-
-    let hitStart = zoneLeft;
-    let hitEnd = zoneLeft + zoneSize;
-
-    if (pos >= hitStart && pos <= hitEnd) {
+    if (pos >= start && pos <= end) {
         win();
     } else {
-        miss();
+        lose();
     }
 }
 
 function win() {
-    gameActive = false;
+    playing = false;
 
-    let reward = level * 0.5;
-    coins += reward;
-
-    document.getElementById("result").innerText =
-        "🔥 PERFECT +" + reward.toFixed(1);
-
-    level++;
-    speed += 0.3;
-
-    if (zoneSize > 8) zoneSize -= 1.5;
-
+    coins += 1;
     updateCoins();
 
-    setTimeout(newRound, 1000);
+    document.getElementById("result").innerText = "🔥 ПОПАЛ!";
+
+    /* усложнение */
+    speed += 0.2;
+    if (zoneSize > 10) zoneSize -= 2;
+
+    setTimeout(nextRound, 1000);
 }
 
-function miss() {
-    gameActive = false;
+function lose() {
+    playing = false;
 
-    document.getElementById("result").innerText =
-        "❌ ПРОИГРАЛ!";
+    document.getElementById("result").innerText = "❌ ПРОИГРАЛ";
 
-    level = 1;
-    speed = 2;
-    zoneSize = 25;
+    /* сброс */
+    speed = 1;
+    zoneSize = 40;
 
-    setTimeout(newRound, 1200);
-}
-
-function openGame() {
-    document.getElementById("main").style.display = "none";
-    document.getElementById("gameScreen").style.display = "block";
-
-    level = 1;
-    speed = 2;
-    zoneSize = 25;
-
-    newRound();
-}
-
-function closeGame() {
-    document.getElementById("main").style.display = "block";
-    document.getElementById("gameScreen").style.display = "none";
-
-    gameActive = false;
+    setTimeout(nextRound, 1500);
 }
 </script>
 

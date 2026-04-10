@@ -17,14 +17,13 @@ body {
     padding: 15px;
 }
 
-/* glass карточки */
+/* карточки */
 .card {
     background: rgba(255,255,255,0.06);
     border-radius: 20px;
     padding: 20px;
     margin-bottom: 15px;
     backdrop-filter: blur(12px);
-    box-shadow: 0 0 20px rgba(0,255,136,0.05);
 }
 
 /* баланс */
@@ -48,14 +47,9 @@ body {
     border: none;
     background: rgba(255,255,255,0.05);
     color: white;
-    transition: 0.2s;
 }
 
-.actions button:hover {
-    background: rgba(0,255,136,0.2);
-}
-
-/* main button */
+/* главная кнопка */
 .main-btn {
     margin-top: 15px;
     width: 100%;
@@ -102,6 +96,36 @@ body {
     text-align: center;
 }
 
+.player {
+    position: relative;
+    height: 120px;
+    margin-top: 20px;
+}
+
+.man {
+    font-size: 60px;
+    position: absolute;
+    bottom: 0;
+    left: 45%;
+    transition: transform 0.2s;
+}
+
+.ball {
+    font-size: 40px;
+    position: absolute;
+    bottom: 0;
+    left: 55%;
+    transition: 0.2s;
+}
+
+.kick {
+    transform: rotate(-20deg) scale(1.2);
+}
+
+.ball-kick {
+    transform: translateY(-50px) translateX(30px);
+}
+
 .bar {
     margin: 30px auto;
     width: 80%;
@@ -118,7 +142,6 @@ body {
     width: 20%;
     height: 100%;
     background: #00ff88;
-    opacity: 0.7;
 }
 
 .slider {
@@ -126,11 +149,6 @@ body {
     width: 6px;
     height: 100%;
     background: white;
-    box-shadow: 0 0 10px white;
-}
-
-button {
-    cursor: pointer;
 }
 </style>
 </head>
@@ -138,28 +156,25 @@ button {
 <body>
 
 <div class="container" id="main">
-
     <div class="card">
         <div>Баланс</div>
         <div class="balance" id="coins">0 FC</div>
     </div>
 
     <div class="card">
-        <div class="actions">
-            <button>⬆️</button>
-            <button>💰</button>
-            <button>📊</button>
-        </div>
-
-        <button class="main-btn">💡 Upgrade soon</button>
+        <button class="main-btn">💡 Скоро апгрейды</button>
     </div>
-
 </div>
 
 <!-- GAME -->
 <div id="gameScreen">
 
-    <h2>⚽ Timing Shot</h2>
+    <h2>⚽ Skill Shot</h2>
+
+    <div class="player">
+        <div class="ball" id="ball">⚽</div>
+        <div class="man" id="man">🧍</div>
+    </div>
 
     <div class="bar">
         <div class="green"></div>
@@ -170,7 +185,7 @@ button {
 
     <p id="result"></p>
 
-    <button onclick="closeGame()">⬅ Back</button>
+    <button onclick="closeGame()">⬅ Назад</button>
 </div>
 
 <!-- MENU -->
@@ -186,8 +201,6 @@ button {
 let coins = Number(localStorage.getItem("coins")) || 0;
 
 let pos = 0;
-let dir = 1;
-
 let level = 1;
 let speed = 2;
 
@@ -195,42 +208,37 @@ let zoneLeft = 40;
 let zoneSize = 25;
 
 let gameActive = false;
-let failed = false;
 
 function updateCoins() {
     document.getElementById("coins").innerText = coins.toFixed(1) + " FC";
     localStorage.setItem("coins", coins);
 }
-
 updateCoins();
 
-// новая зона каждый раунд
+// новый раунд
 function newRound() {
     pos = 0;
-    dir = 1;
-    failed = false;
     gameActive = true;
 
-    zoneLeft = Math.random() * 50 + 20; // 20–70%
-    
+    zoneLeft = Math.random() * 50 + 20;
+
     const green = document.querySelector(".green");
     green.style.left = zoneLeft + "%";
     green.style.width = zoneSize + "%";
 
-    document.getElementById("result").innerText = "⚽ Tap at perfect moment!";
+    document.getElementById("result").innerText = "⚽ ЖМИ В НУЖНЫЙ МОМЕНТ!";
 }
 
-// анимация стрелки
+// анимация
 function animate() {
     if (gameActive) {
-        pos += dir * speed;
+        pos += speed;
 
         if (pos >= 100) {
-            miss();
+miss();
         }
 
-        const slider = document.getElementById("slider");
-        if (slider) slider.style.left = pos + "%";
+        document.getElementById("slider").style.left = pos + "%";
     }
 
     requestAnimationFrame(animate);
@@ -240,6 +248,17 @@ animate();
 // удар
 function kick() {
     if (!gameActive) return;
+
+    const man = document.getElementById("man");
+    const ball = document.getElementById("ball");
+
+    man.classList.add("kick");
+    ball.classList.add("ball-kick");
+
+    setTimeout(() => {
+        man.classList.remove("kick");
+        ball.classList.remove("ball-kick");
+    }, 200);
 
     let hitStart = zoneLeft;
     let hitEnd = zoneLeft + zoneSize;
@@ -258,38 +277,29 @@ function win() {
     coins += reward;
 
     document.getElementById("result").innerText =
-        "🔥 PERFECT! +" + reward.toFixed(1);
+        "🔥 PERFECT +" + reward.toFixed(1);
 
-    levelUp();
+    level++;
+    speed += 0.3;
+
+    if (zoneSize > 8) zoneSize -= 1.5;
+
     updateCoins();
 
-    setTimeout(newRound, 1200);
+    setTimeout(newRound, 1000);
 }
 
 function miss() {
-    if (!gameActive) return;
-
     gameActive = false;
 
     document.getElementById("result").innerText =
-        "❌ MISS! Level reset";
+        "❌ ПРОИГРАЛ!";
 
     level = 1;
     speed = 2;
     zoneSize = 25;
 
     setTimeout(newRound, 1200);
-}
-
-function levelUp() {
-    level++;
-
-    // усложнение
-    speed += 0.3;
-
-    if (zoneSize > 8) {
-        zoneSize -= 1.5;
-    }
 }
 
 function openGame() {
@@ -313,4 +323,3 @@ function closeGame() {
 
 </body>
 </html>
-    

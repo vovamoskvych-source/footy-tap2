@@ -61,3 +61,30 @@ button {
     border: none;
     border-radius: 10px;
 }
+.menu {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.menu button {
+    background: rgba(255,255,255,0.05);
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+/* ГЛАВНАЯ КНОПКА */
+.play {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00ff88, #00cc66);
+    font-size: 26px;
+    transform: translateY(-20px);
+    box-shadow: 0 0 20px #00ff88;
+}

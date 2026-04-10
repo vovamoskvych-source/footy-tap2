@@ -3,30 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <title>Footy Coin</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: radial-gradient(circle, #0f5132, #000);
+    color: white;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 20px;
+    color: #00ff88;
+}
+
+.menu {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+button {
+    width: 220px;
+    padding: 15px;
+    font-size: 18px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: #00ff88;
+    color: black;
+    font-weight: bold;
+}
+
+.screen {
+    margin-top: 20px;
+    font-size: 18px;
+    min-height: 60px;
+}
+</style>
 </head>
 
 <body>
 
 <h1>⚽️ Footy Coin</h1>
 
-<div class="coins">💰 Coins: <span id="coins">0</span></div>
-
-<div class="player" id="player">
-    <img src="img/player.jpg">
+<div class="menu">
+    <button onclick="launch()">🚀 LAUNCH</button>
+    <button onclick="balance()">💰 Баланс</button>
+    <button onclick="play()">🎮 Играть</button>
+    <button onclick="upgrades()">📈 Апгрейды</button>
+    <button onclick="top()">🏆 Топ</button>
 </div>
 
-<div class="ball">
-    <img src="img/ball.avif">
+<div class="screen" id="screen">
+    Добро пожаловать в Footy Coin ⚽️
 </div>
 
-<div class="bar">
-    <div class="green-zone"></div>
-    <div class="slider" id="slider"></div>
-</div>
+<script>
+let coins = 0;
 
-<button onclick="hit()">KICK</button>
+function launch() {
+    document.getElementById("screen").innerText = "🚀 Игра запущена!";
+}
 
-<script src="script.js"></script>
+function balance() {
+    document.getElementById("screen").innerText = "💰 Баланс: " + coins + " coins";
+}
+
+function play() {
+    coins += 1;
+    document.getElementById("screen").innerText = "🎮 +1 coin! Сейчас: " + coins;
+}
+
+function upgrades() {
+    document.getElementById("screen").innerText = "📈 Апгрейды скоро будут!";
+}
+
+function top() {
+    document.getElementById("screen").innerText = "🏆 Лидерборд в разработке!";
+}
+</script>
+
 </body>
 </html>

@@ -8,51 +8,80 @@
 body {
     margin: 0;
     font-family: Arial;
-    background: linear-gradient(#0f5132, #000);
     color: white;
     text-align: center;
+    background: linear-gradient(#0a3d1a, #000);
+}
+
+/* поле */
+.field {
+    position: relative;
+    height: 300px;
+    background: radial-gradient(circle, #1f7a3a, #0a3d1a);
+    border-bottom: 3px solid #00ff88;
 }
 
 /* баланс */
 .header {
-    padding: 20px;
-    font-size: 24px;
+    padding: 15px;
+    font-size: 22px;
     color: #00ff88;
 }
 
-/* игрок */
+/* игрок (кружок) */
 .player {
-    margin-top: 30px;
-}
-
-.player img {
-    width: 120px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 40px;
 }
 
 /* мяч */
 .ball {
-    margin-top: 20px;
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    transition: 0.2s;
 }
 
-.ball img {
-    width: 50px;
+/* шкала */
+.bar {
+    margin: 30px auto;
+    width: 80%;
+    height: 25px;
+    background: #222;
+    border-radius: 10px;
+    position: relative;
 }
 
-/* кнопка игры */
-.play-btn {
-    margin-top: 20px;
-    padding: 15px 30px;
+/* зелёная зона */
+.green {
+    position: absolute;
+    left: 45%;
+    width: 10%;
+    height: 100%;
     background: #00ff88;
-    color: black;
-    border: none;
-    border-radius: 12px;
-    font-size: 18px;
 }
 
-/* экран */
-.screen {
+/* бегунок */
+.slider {
+    position: absolute;
+    width: 5px;
+    height: 100%;
+    background: white;
+}
+
+/* кнопка */
+button {
     margin-top: 15px;
+    padding: 12px 25px;
     font-size: 16px;
+    background: #00ff88;
+    border: none;
+    border-radius: 10px;
 }
 
 /* нижнее меню */
@@ -67,14 +96,8 @@ body {
 .menu button {
     flex: 1;
     padding: 15px;
-    border: none;
     background: #222;
     color: white;
-}
-
-.menu button:hover {
-    background: #00ff88;
-    color: black;
 }
 </style>
 </head>
@@ -82,66 +105,70 @@ body {
 <body>
 
 <div class="header">
-💰 <span id="coins">0</span> Footy Coins
+💰 <span id="coins">0</span> Coins
 </div>
 
-<div class="player">
-<img src="https://i.imgur.com/7yUvePI.png">
+<div class="field">
+    <div class="ball" id="ball">⚽️</div>
+    <div class="player" id="player">🧍‍♂️</div>
 </div>
 
-<div class="ball">
-<img src="https://i.imgur.com/JYUB0m3.png">
+<div class="bar">
+    <div class="green"></div>
+    <div class="slider" id="slider"></div>
 </div>
 
-<button class="play-btn" onclick="kick()">⚽️ TAP</button>
+<button onclick="kick()">KICK ⚽️</button>
 
-<div class="screen" id="screen">
-Нажимай и набивай мяч
-</div>
+<p id="result">Попади в зелёную зону</p>
 
 <div class="menu">
-<button onclick="tab('wallet')">💰</button>
-<button onclick="tab('ref')">👥</button>
-<button onclick="tab('game')">🎮</button>
-<button onclick="tab('shop')">🛒</button>
-<button onclick="tab('profile')">👤</button>
+    <button>💰</button>
+    <button>👥</button>
+    <button>🎮</button>
+    <button>🛒</button>
+    <button>👤</button>
 </div>
 
 <script>
 let coins = 0;
+let pos = 0;
+let dir = 1;
 
-function update() {
-    document.getElementById("coins").innerText = coins;
-}
+const slider = document.getElementById("slider");
+const coinsText = document.getElementById("coins");
+const ball = document.getElementById("ball");
+const result = document.getElementById("result");
 
+// движение полосы
+setInterval(() => {
+    pos += dir * 2;
+
+    if (pos >= 95) dir = -1;
+    if (pos <= 0) dir = 1;
+
+    slider.style.left = pos + "%";
+}, 10);
+
+// удар
 function kick() {
-    coins += 1;
-    update();
-    document.getElementById("screen").innerText = "⚽️ Удар! +1 coin";
-}
+    // анимация мяча
+    ball.style.transform = "translate(-50%, -40px)";
+    setTimeout(() => {
+        ball.style.transform = "translate(-50%, 0)";
+    }, 200);
 
-function tab(name) {
-    const screen = document.getElementById("screen");
-
-    if (name === "wallet") {
-        screen.innerText = "💰 Баланс: " + coins;
+    if (pos >= 45 && pos <= 55) {
+        coins += 1;
+        result.innerText = "🔥 ИДЕАЛЬНО! +1";
+    } else if (pos >= 35 && pos <= 65) {
+        coins += 0.3;
+        result.innerText = "👌 Норм +0.3";
+    } else {
+        result.innerText = "❌ Мимо";
     }
 
-    if (name === "ref") {
-        screen.innerText = "👥 Приглашай друзей!";
-    }
-
-    if (name === "game") {
-        screen.innerText = "🎮 Игра активна";
-    }
-
-    if (name === "shop") {
-        screen.innerText = "🛒 Магазин скоро";
-    }
-
-    if (name === "profile") {
-        screen.innerText = "👤 Профиль";
-    }
+    coinsText.innerText = coins.toFixed(1);
 }
 </script>
 

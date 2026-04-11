@@ -32,7 +32,7 @@ function closeGame() {
     loopStarted = false;
 }
 
-/* СТАРТ + ПРЫЖОК */
+/* ПРЫЖОК */
 function jump() {
     if (!playing) {
         playing = true;
@@ -46,8 +46,7 @@ function jump() {
     velocity = jumpPower;
 }
 
-/* 🔥 ВАЖНО: ДВА СОБЫТИЯ */
-document.addEventListener("click", jump);
+/* 🔥 ТОЛЬКО ОДНО СОБЫТИЕ */
 document.addEventListener("touchstart", jump);
 
 /* loop */

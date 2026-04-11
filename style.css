@@ -158,3 +158,8 @@ body {
     from { transform: translateX(100vw); }
     to { transform: translateX(-200px); }
 }
+#ball {
+    outline: 3px solid red !important;
+    transform: none !important;
+    animation: none !important;
+}

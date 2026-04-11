@@ -3,151 +3,171 @@
 <head>
 <meta charset="UTF-8">
 <title>Footy Coin</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    font-family: Arial;
+}
+
+/* кнопка назад */
+.back {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(0,0,0,0.5);
+    color: white;
+}
+
+/* UI */
+.ui {
+    position: fixed;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    z-index: 10;
+}
+
+.score {
+    font-size: 40px;
+    color: #00ff88;
+}
+
+</style>
 </head>
 
 <body>
 
-<!-- MAIN -->
-<div class="container" id="main">
-    <div class="card">
-        <div class="label">Баланс</div>
-        <div class="balance" id="coins">0 FC</div>
-    </div>
+<button class="back" onclick="alert('потом вернем меню')">←</button>
 
-    <div class="card center">
-        <h2>⚽ FOOTY COIN</h2>
-        <p>Набивай мяч и зарабатывай</p>
-    </div>
+<div class="ui">
+    <div class="score" id="score">0</div>
+    <div id="status">Tap to kick</div>
 </div>
 
-<!-- GAME -->
-<div id="gameScreen">
-
-    <!-- фон стадиона -->
-    <div class="stadium"></div>
-    <div class="overlay"></div>
-
-    <!-- игрок -->
-    <div class="player-zone">
-        <div class="player-glow"></div>
-    </div>
-
-    <!-- мяч -->
-    <div class="ball" id="ball"></div>
-
-    <!-- UI -->
-    <div class="top-ui">
-        <div id="score">0</div>
-        <div id="status">Tap to start</div>
-    </div>
-
-    <!-- кнопки -->
-    <button id="startBtn" class="start-btn" onclick="startGame()">START</button>
-    <button id="kickBtn" class="kick-btn" onclick="kick()">KICK</button>
-    <button class="back-btn" onclick="closeGame()">←</button>
-
-</div>
-
-<!-- MENU -->
-<div class="menu" id="menu">
-    <button>💰</button>
-    <button>👥</button>
-    <button class="play" onclick="openGame()">⚽</button>
-    <button>🛒</button>
-    <button>👤</button>
-</div>
+<canvas id="game"></canvas>
 
 <script>
-let coins = Number(localStorage.getItem("coins")) || 0;
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+/* ЗАГРУЗКА ГРАФИКИ */
+const bg = new Image();
+bg.src = "https://images.unsplash.com/photo-1508098682722-e99c43a406b2";
+
+const player = new Image();
+player.src = "https://i.imgur.com/Q9qFt3m.png";
+
+const ballImg = new Image();
+ballImg.src = "https://i.imgur.com/7QFQp6H.png";
+
+/* ИГРОВЫЕ ДАННЫЕ */
 let score = 0;
 
-let ballY = 200;
-let velocity = 0;
-let gravity = -0.45;
+let ball = {
+    x: canvas.width / 2,
+    y: canvas.height - 250,
+    size: 40,
+    velocity: 0
+};
 
-let playing = false;
+let gravity = 0.6;
+let playing = true;
 
-function updateCoins() {
-    document.getElementById("coins").innerText = coins + " FC";
-    localStorage.setItem("coins", coins);
-}
-updateCoins();
+/* РЕСАЙЗ */
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
 
-function openGame() {
-    main.style.display = "none";
-    gameScreen.style.display = "block";
-    menu.style.display = "none";
-}
-
-function closeGame() {
-    main.style.display = "block";
-    gameScreen.style.display = "none";
-    menu.style.display = "flex";
-    playing = false;
-}
-
-/* старт */
-function startGame() {
-    score = 0;
-    ballY = 200;
-    velocity = 0;
-    playing = true;
-
-    startBtn.style.display = "none";
-    kickBtn.style.display = "block";
-    status.innerText = "";
-
-    loop();
-}
-
-/* физика */
+/* ОСНОВНОЙ ЦИКЛ */
 function loop() {
-    if (!playing) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    velocity += gravity;
-    ballY += velocity;
+    /* фон */
+    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-    if (ballY <= 110) {
+    /* затемнение */
+    ctx.fillStyle = "rgba(0,0,0,0.4)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    /* игрок */
+    let playerWidth = canvas.width * 0.35;
+    let playerHeight = playerWidth * 1.2;
+
+    ctx.drawImage(
+        player,
+        canvas.width / 2 - playerWidth / 2,
+        canvas.height - playerHeight - 50,
+        playerWidth,
+        playerHeight
+    );
+
+    /* физика мяча */
+    ball.velocity += gravity;
+    ball.y += ball.velocity;
+
+    /* ограничение */
+    if (ball.y > canvas.height - 120) {
         lose();
-        return;
     }
 
-    ball.style.bottom = ballY + "px";
+    /* мяч */
+    ctx.drawImage(
+        ballImg,
+        ball.x - ball.size / 2,
+        ball.y,
+        ball.size,
+        ball.size
+    );
 
     requestAnimationFrame(loop);
 }
+loop();
 
-/* удар */
-function kick() {
+/* УДАР */
+window.addEventListener("click", () => {
     if (!playing) return;
 
-    velocity = 8;
+    ball.velocity = -12;
     score++;
 
-    coins += 1;
-    updateCoins();
+    document.getElementById("score").innerText = score;
 
-    scoreEl.innerText = score;
+    /* эффект */
+    canvas.style.transform = "scale(1.02)";
+    setTimeout(() => canvas.style.transform = "scale(1)", 100);
+});
 
-    // анимация
-    ball.style.transform = "translateX(-50%) scale(1.2)";
-    setTimeout(() => {
-        ball.style.transform = "translateX(-50%) scale(1)";
-    }, 100);
-}
-
-/* проигрыш */
+/* ПРОИГРЫШ */
 function lose() {
     playing = false;
 
-    status.innerText = "❌ " + score;
-    startBtn.style.display = "block";
-    kickBtn.style.display = "none";
+    document.getElementById("status").innerText =
+        "❌ Упал! Счет: " + score;
 
-    // тряска
-    gameScreen.classList.add("shake");
-    setTimeout(() => gameScreen.classList.remove("shake"), 300);
+    /* тряска */
+    let i = 0;
+    let shake = setInterval(() => {
+        canvas.style.transform =
+            "translate(" + (Math.random()*10-5) + "px," +
+                           (Math.random()*10-5) + "px)";
+        i++;
+        if (i > 10) {
+            clearInterval(shake);
+            canvas.style.transform = "none";
+        }
+    }, 30);
 }
 </script>
 

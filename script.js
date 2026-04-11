@@ -1,3 +1,4 @@
+alert("SCRIPT 1 ЗАГРУЗИЛСЯ");
 const main = document.getElementById("main");
 const gameScreen = document.getElementById("gameScreen");
 const ball = document.getElementById("ball");

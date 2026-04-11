@@ -8,8 +8,9 @@
 body {
     margin: 0;
     font-family: Arial;
-    background: radial-gradient(circle at top, #0f172a, #020617);
+    background: #0f172a;
     color: white;
+    overflow: hidden;
 }
 
 /* MAIN */
@@ -27,26 +28,6 @@ body {
 .balance {
     font-size: 32px;
     color: #00ff88;
-}
-
-.title {
-    margin-bottom: 10px;
-    font-size: 18px;
-    color: #00ff88;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.action {
-    padding: 15px;
-    border-radius: 12px;
-    border: none;
-    background: rgba(255,255,255,0.05);
-    color: white;
 }
 
 /* MENU */
@@ -72,7 +53,6 @@ body {
     border-radius: 50%;
     background: #00ff88;
     font-size: 26px;
-    transform: translateY(-20px);
 }
 
 /* GAME */
@@ -80,24 +60,36 @@ body {
     display: none;
     position: fixed;
     inset: 0;
-    overflow: hidden;
 }
 
-/* фон */
+/* фон поле */
 .field {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(#0b1220 0%, #0b1220 40%, #166534 100%);
+}
+
+/* линии */
+.field::after {
+    content: "";
     position: absolute;
     width: 100%;
     height: 100%;
-    background: linear-gradient(#111827, #14532d);
+    background:
+        linear-gradient(white, white) center/2px 100% no-repeat;
+    opacity: 0.2;
 }
 
 /* мяч */
 .ball {
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background: white;
+    background:
+        radial-gradient(circle at 30% 30%, white, #ccc),
+        repeating-linear-gradient(60deg, black 0 6px, white 6px 12px);
     left: 80px;
     bottom: 120px;
 }
@@ -105,10 +97,11 @@ body {
 /* препятствия */
 .obstacle {
     position: absolute;
-    width: 30px;
-    height: 60px;
-    background: red;
+    width: 40px;
+    height: 80px;
+    background: linear-gradient(red, darkred);
     bottom: 120px;
+    border-radius: 5px;
 }
 
 /* UI */
@@ -120,19 +113,27 @@ body {
 }
 
 #score {
-    font-size: 30px;
+    font-size: 40px;
     color: #00ff88;
 }
 
-/* кнопка */
-#jumpBtn {
-    position: fixed;
-    bottom: 40px;
-    right: 20px;
-    padding: 20px;
-    border-radius: 50%;
-    background: #00ff88;
+/* старт экран */
+#startScreen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.7);
+}
+
+.startBtn {
+    padding: 15px 30px;
+    font-size: 20px;
+    border-radius: 12px;
     border: none;
+    background: #00ff88;
 }
 </style>
 </head>
@@ -141,27 +142,10 @@ body {
 
 <!-- MAIN -->
 <div class="container" id="main">
-
     <div class="card">
         <div>Баланс</div>
         <div class="balance" id="coins">0 FC</div>
     </div>
-
-    <div class="card">
-        <div class="title">Финансы</div>
-        <div class="grid">
-            <button class="action">💸 Ввод</button>
-            <button class="action">💰 Вывод</button>
-            <button class="action">⏳ Hold</button>
-            <button class="action">👥 Друзья</button>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="title">Рефералы</div>
-        <p>Приглашено: <span id="refs">0</span></p>
-    </div>
-
 </div>
 
 <!-- GAME -->
@@ -172,13 +156,16 @@ body {
     <div class="ball" id="ball"></div>
 
     <div class="ui">
-        <h2>⚽ Ball Rush</h2>
         <div id="score">0</div>
-        <div id="status">Нажми чтобы прыгнуть</div>
-        <button onclick="closeGame()">⬅ Назад</button>
+        <div id="status"></div>
+        <button onclick="closeGame()">⬅</button>
     </div>
 
-    <button id="jumpBtn">↑</button>
+    <!-- СТАРТ -->
+    <div id="startScreen">
+        <h2>⚽ Ball Rush</h2>
+        <button class="startBtn" onclick="startGame()">START</button>
+    </div>
 
 </div>
 
@@ -197,18 +184,16 @@ let score = 0;
 
 let ballY = 120;
 let velocity = 0;
-let gravity = -0.5;
+let gravity = -0.6;
 
 let obstacles = [];
 let playing = false;
 
-/* открыть игру */
+/* открыть */
 function openGame() {
     main.style.display = "none";
     gameScreen.style.display = "block";
     menu.style.display = "none";
-
-    startGame();
 }
 
 /* закрыть */
@@ -221,6 +206,8 @@ function closeGame() {
 
 /* старт */
 function startGame() {
+    startScreen.style.display = "none";
+
     score = 0;
     ballY = 120;
     velocity = 0;
@@ -229,6 +216,12 @@ function startGame() {
 
     loop();
 }
+
+/* тап = прыжок */
+document.addEventListener("click", () => {
+    if (!playing) return;
+    velocity = 10;
+});
 
 /* цикл */
 function loop() {
@@ -241,8 +234,8 @@ function loop() {
 
     ball.style.bottom = ballY + "px";
 
-    /* спавн препятствий */
-    if (Math.random() < 0.02) {
+    /* спавн */
+    if (Math.random() < 0.015) {
         let obs = document.createElement("div");
         obs.className = "obstacle";
         obs.style.left = window.innerWidth + "px";
@@ -253,11 +246,10 @@ function loop() {
     /* движение */
     obstacles.forEach((obs, i) => {
         let x = parseInt(obs.style.left);
-        x -= 5;
+        x -= 6;
         obs.style.left = x + "px";
 
-        /* столкновение */
-        if (x < 100 && x > 50 && ballY < 100) {
+        if (x < 110 && x > 50 && ballY < 90) {
             lose();
         }
 
@@ -266,24 +258,19 @@ function loop() {
             obstacles.splice(i, 1);
             score++;
             coins++;
-
-            document.getElementById("score").innerText = score;
-            document.getElementById("coins").innerText = coins + " FC";
+            scoreEl.innerText = score;
+            coinsEl.innerText = coins + " FC";
         }
     });
 
     requestAnimationFrame(loop);
 }
 
-/* прыжок */
-document.getElementById("jumpBtn").onclick = () => {
-    velocity = 10;
-};
-
 /* проигрыш */
 function lose() {
     playing = false;
-    document.getElementById("status").innerText = "❌ Проиграл";
+    status.innerText = "❌ Проиграл";
+    startScreen.style.display = "flex";
 }
 </script>
 

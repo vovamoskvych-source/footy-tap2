@@ -104,3 +104,13 @@ body {
     border-radius: 50%;
     background: #00ff88;
 }
+* {
+    animation: none !important;
+    transform: none !important;
+}
+
+#ball {
+    position: absolute !important;
+    bottom: 150px !important;
+    left: 100px !important;
+}

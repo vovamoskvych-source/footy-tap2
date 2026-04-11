@@ -29,7 +29,26 @@ body {
     color: #00ff88;
 }
 
-/* MENU (НЕ ТРОГАЕМ) */
+.title {
+    color: #00ff88;
+    margin-bottom: 10px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.action {
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255,255,255,0.05);
+    color: white;
+}
+
+/* MENU */
 .menu {
     position: fixed;
     bottom: 10px;
@@ -62,47 +81,58 @@ body {
     overflow: hidden;
 }
 
-/* ЯРКИЙ СТАДИОН */
+/* фон стадион */
 .field {
     position: absolute;
     inset: 0;
     background:
-        linear-gradient(to bottom, #0ea5e9 0%, #22c55e 60%, #15803d 100%);
+        linear-gradient(to bottom, #1e293b 0%, #16a34a 60%, #14532d 100%);
 }
 
-/* линии */
-.field::after {
-    content: "";
+/* трибуны */
+.field::before {
+    content: "FOOTY • FOOTY • FOOTY • FOOTY • FOOTY";
     position: absolute;
+    top: 40px;
     width: 100%;
-    height: 100%;
-    background:
-        linear-gradient(white, white) center/2px 100% no-repeat;
+    text-align: center;
     opacity: 0.2;
+    font-size: 24px;
 }
 
-/* МЯЧ FC */
+/* мяч */
 .ball {
     position: absolute;
-    width: 55px;
-    height: 55px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    background: radial-gradient(circle, #ffffff, #cccccc);
+    background: white;
+    left: 80px;
+    bottom: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    color: black;
-    left: 80px;
-    bottom: 120px;
+    flex-direction: column;
+}
+
+.eyes {
+    display: flex;
+    gap: 5px;
+}
+
+.eye {
+    width: 10px;
+    height: 10px;
+    background: black;
+    border-radius: 50%;
 }
 
 /* препятствия */
 .obstacle {
     position: absolute;
-    width: 45px;
-    height: 80px;
-    background: linear-gradient(#ff3b3b, #7f0000);
+    width: 40px;
+    height: 70px;
+    background: red;
     bottom: 120px;
     border-radius: 8px;
 }
@@ -125,18 +155,18 @@ body {
     position: absolute;
     inset: 0;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     background: rgba(0,0,0,0.5);
 }
 
 .startBtn {
     padding: 15px 30px;
     font-size: 20px;
-    border-radius: 12px;
-    border: none;
     background: #00ff88;
+    border: none;
+    border-radius: 12px;
 }
 </style>
 </head>
@@ -145,10 +175,22 @@ body {
 
 <!-- MAIN -->
 <div class="container" id="main">
+
     <div class="card">
         <div>Баланс</div>
         <div class="balance" id="coins">0 FC</div>
     </div>
+
+    <div class="card">
+        <div class="title">Финансы</div>
+        <div class="grid">
+            <button class="action">💸 Ввод</button>
+            <button class="action">💰 Вывод</button>
+            <button class="action">⏳ Hold</button>
+            <button class="action">👥 Друзья</button>
+        </div>
+    </div>
+
 </div>
 
 <!-- GAME -->
@@ -156,7 +198,13 @@ body {
 
     <div class="field"></div>
 
-    <div class="ball" id="ball">FC</div>
+    <div class="ball" id="ball">
+        <div class="eyes">
+            <div class="eye"></div>
+            <div class="eye"></div>
+        </div>
+        FC
+    </div>
 
     <div class="ui">
         <div id="score">0</div>
@@ -186,7 +234,7 @@ let score = 0;
 
 let ballY = 120;
 let velocity = 0;
-let gravity = -0.5;
+let gravity = -0.45;
 
 let obstacles = [];
 let playing = false;
@@ -196,7 +244,6 @@ function openGame() {
     main.style.display = "none";
     gameScreen.style.display = "block";
     menu.style.display = "none";
-
     resetGame();
 }
 
@@ -230,24 +277,26 @@ function startGame() {
 /* тап */
 document.addEventListener("click", () => {
     if (!playing) return;
-    velocity = 9;
+    velocity = 8;
 });
 
 /* цикл */
+let spawnTimer = 0;
+
 function loop() {
     if (!playing) return;
 
     velocity += gravity;
-    ballY += velocity;if (ballY < 0) ballY = 0;
+    ballY += velocity;
+
+    if (ballY < 0) ballY = 0;
 
     ball.style.bottom = ballY + "px";
 
-    if (Math.random() < 0.02) {
-        let obs = document.createElement("div");
-        obs.className = "obstacle";
-        obs.style.left = window.innerWidth + "px";
-        gameScreen.appendChild(obs);
-        obstacles.push(obs);
+    spawnTimer++;
+    if (spawnTimer > 80) {
+        spawnObstacle();
+        spawnTimer = 0;
     }
 
     obstacles.forEach((obs, i) => {
@@ -270,6 +319,15 @@ function loop() {
     });
 
     requestAnimationFrame(loop);
+}
+
+/* создать препятствие */
+function spawnObstacle() {
+    let obs = document.createElement("div");
+    obs.className = "obstacle";
+    obs.style.left = window.innerWidth + "px";
+    gameScreen.appendChild(obs);
+    obstacles.push(obs);
 }
 
 /* проигрыш */

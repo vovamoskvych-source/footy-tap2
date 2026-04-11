@@ -108,6 +108,9 @@ body {
     width: 100%;
     display: flex;
     justify-content: space-around;
+    background: red !important;
+z-index: 9999 !important;
+position: fixed !important;
 }
 
 .menu button {
@@ -135,4 +138,3 @@ body {
     bottom: 150px !important;
     z-index: 9999 !important;
 }
-}}

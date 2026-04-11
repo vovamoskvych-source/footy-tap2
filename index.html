@@ -11,13 +11,15 @@
 <!-- MAIN -->
 <div id="main">
     <div class="top">
-        <div class="balance" id="coins">0 FC</div>
+        <div class="balanceBlock">
+            <div class="balance" id="coins">0 FC</div>
 
-        <div class="miniMenu">
-            <button>Ввод</button>
-            <button>Вывод</button>
-            <button>Холд</button>
-            <button>Рефералы</button>
+            <div class="miniMenu">
+                <button>Ввод</button>
+                <button>Вывод</button>
+                <button>Холд</button>
+                <button>Рефералы</button>
+            </div>
         </div>
     </div>
 </div>
@@ -27,25 +29,29 @@
 
     <div class="field"></div>
 
-    <div id="ball"></div>
+    <div class="logo">⚽ FOOTY COIN</div>
 
-    <div id="ui">
+    <div class="phrases" id="phrases"></div>
+
+    <div class="ball" id="ball"></div>
+
+    <div class="ui">
         <div id="score">0</div>
         <div id="status"></div>
         <button onclick="closeGame()">⬅</button>
     </div>
 
-    <div id="start">
-        <button onclick="startGame()">START</button>
+    <div id="startScreen">
+        <button onclick="startGame()" class="startBtn">START</button>
     </div>
 
 </div>
 
 <!-- MENU -->
-<div class="menu">
+<div class="menu" id="menu">
     <button>💰</button>
     <button>👥</button>
-    <button onclick="openGame()" class="play">⚽</button>
+    <button class="play" onclick="openGame()">⚽</button>
     <button>🛒</button>
     <button>👤</button>
 </div>

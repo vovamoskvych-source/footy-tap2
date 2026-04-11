@@ -7,14 +7,8 @@ body {
 }
 
 /* TOP */
-.topBar {
+.top {
     padding: 15px;
-}
-
-.balanceBlock {
-    display: flex;
-    align-items: center;
-    gap: 15px;
 }
 
 .balance {
@@ -22,7 +16,6 @@ body {
     color: #00ff88;
 }
 
-/* мини кнопки */
 .miniMenu {
     display: flex;
     gap: 8px;
@@ -35,6 +28,57 @@ body {
     border: none;
     background: rgba(255,255,255,0.1);
     color: white;
+}
+
+/* GAME SCREEN */
+#gameScreen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+}
+
+/* FIELD */
+.field {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #15803d, #22c55e);
+}
+
+/* BALL (ВАЖНО!) */
+#ball {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    left: 100px;
+    bottom: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, white, #ccc);
+}
+
+/* UI */
+#ui {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+/* START */
+#start {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#start button {
+    padding: 15px 30px;
+    font-size: 20px;
+    background: #00ff88;
+    border: none;
+    border-radius: 12px;
 }
 
 /* MENU */
@@ -59,79 +103,4 @@ body {
     height: 70px;
     border-radius: 50%;
     background: #00ff88;
-}
-
-/* GAME */
-#gameScreen {
-    display: none;
-    position: fixed;
-    inset: 0;
-}
-
-/* FIELD */
-.field {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, #15803d, #22c55e);
-}
-
-/* BALL */
-.ball {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    left: 100px;
-    bottom: 150px;
-    background: radial-gradient(circle at 30% 30%, white, #ccc);
-}
-
-/* OBSTACLE */
-.obstacle {
-    position: absolute;
-    width: 50px;
-    height: 90px;
-    bottom: 0;
-    background: red;
-}
-
-/* UI */
-.ui {
-    position: absolute;
-    top: 20px;
-    width: 100%;
-    text-align: center;
-}
-
-#score {
-    font-size: 40px;
-    color: #00ff88;
-}
-
-/* START */
-#startScreen {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.startBtn {
-    padding: 15px 30px;
-    font-size: 20px;
-    background: #00ff88;
-    border: none;
-    border-radius: 12px;
-}
-#gameScreen {
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-}
-
-.ball {
-    position: absolute;
-    left: 100px;
-    bottom: 150px;
 }

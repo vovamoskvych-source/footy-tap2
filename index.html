@@ -8,9 +8,8 @@
 body {
     margin: 0;
     font-family: Arial;
-    background: #0f172a;
+    background: radial-gradient(circle at top, #0f172a, #020617);
     color: white;
-    overflow: hidden;
 }
 
 /* MAIN */
@@ -30,7 +29,7 @@ body {
     color: #00ff88;
 }
 
-/* MENU */
+/* MENU (НЕ ТРОГАЕМ) */
 .menu {
     position: fixed;
     bottom: 10px;
@@ -60,14 +59,15 @@ body {
     display: none;
     position: fixed;
     inset: 0;
+    overflow: hidden;
 }
 
-/* фон поле */
+/* ЯРКИЙ СТАДИОН */
 .field {
     position: absolute;
     inset: 0;
     background:
-        linear-gradient(#0b1220 0%, #0b1220 40%, #166534 100%);
+        linear-gradient(to bottom, #0ea5e9 0%, #22c55e 60%, #15803d 100%);
 }
 
 /* линии */
@@ -81,15 +81,18 @@ body {
     opacity: 0.2;
 }
 
-/* мяч */
+/* МЯЧ FC */
 .ball {
     position: absolute;
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
-    background:
-        radial-gradient(circle at 30% 30%, white, #ccc),
-        repeating-linear-gradient(60deg, black 0 6px, white 6px 12px);
+    background: radial-gradient(circle, #ffffff, #cccccc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: black;
     left: 80px;
     bottom: 120px;
 }
@@ -97,11 +100,11 @@ body {
 /* препятствия */
 .obstacle {
     position: absolute;
-    width: 40px;
+    width: 45px;
     height: 80px;
-    background: linear-gradient(red, darkred);
+    background: linear-gradient(#ff3b3b, #7f0000);
     bottom: 120px;
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 /* UI */
@@ -117,7 +120,7 @@ body {
     color: #00ff88;
 }
 
-/* старт экран */
+/* старт */
 #startScreen {
     position: absolute;
     inset: 0;
@@ -125,7 +128,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.5);
 }
 
 .startBtn {
@@ -153,7 +156,7 @@ body {
 
     <div class="field"></div>
 
-    <div class="ball" id="ball"></div>
+    <div class="ball" id="ball">FC</div>
 
     <div class="ui">
         <div id="score">0</div>
@@ -161,7 +164,6 @@ body {
         <button onclick="closeGame()">⬅</button>
     </div>
 
-    <!-- СТАРТ -->
     <div id="startScreen">
         <h2>⚽ Ball Rush</h2>
         <button class="startBtn" onclick="startGame()">START</button>
@@ -184,7 +186,7 @@ let score = 0;
 
 let ballY = 120;
 let velocity = 0;
-let gravity = -0.6;
+let gravity = -0.5;
 
 let obstacles = [];
 let playing = false;
@@ -194,6 +196,8 @@ function openGame() {
     main.style.display = "none";
     gameScreen.style.display = "block";
     menu.style.display = "none";
+
+    resetGame();
 }
 
 /* закрыть */
@@ -204,23 +208,29 @@ function closeGame() {
     playing = false;
 }
 
-/* старт */
-function startGame() {
-    startScreen.style.display = "none";
-
+/* сброс */
+function resetGame() {
+    startScreen.style.display = "flex";
     score = 0;
     ballY = 120;
     velocity = 0;
-    obstacles = [];
-    playing = true;
+    playing = false;
 
+    obstacles.forEach(o => o.remove());
+    obstacles = [];
+}
+
+/* старт */
+function startGame() {
+    startScreen.style.display = "none";
+    playing = true;
     loop();
 }
 
-/* тап = прыжок */
+/* тап */
 document.addEventListener("click", () => {
     if (!playing) return;
-    velocity = 10;
+    velocity = 9;
 });
 
 /* цикл */
@@ -228,14 +238,11 @@ function loop() {
     if (!playing) return;
 
     velocity += gravity;
-    ballY += velocity;
-
-    if (ballY < 0) ballY = 0;
+    ballY += velocity;if (ballY < 0) ballY = 0;
 
     ball.style.bottom = ballY + "px";
 
-    /* спавн */
-    if (Math.random() < 0.015) {
+    if (Math.random() < 0.02) {
         let obs = document.createElement("div");
         obs.className = "obstacle";
         obs.style.left = window.innerWidth + "px";
@@ -243,10 +250,9 @@ function loop() {
         obstacles.push(obs);
     }
 
-    /* движение */
     obstacles.forEach((obs, i) => {
         let x = parseInt(obs.style.left);
-        x -= 6;
+        x -= 5;
         obs.style.left = x + "px";
 
         if (x < 110 && x > 50 && ballY < 90) {

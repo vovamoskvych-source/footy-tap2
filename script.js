@@ -1,32 +1,152 @@
 let coins = 0;
-let pos = 0;
-let direction = 1;
+let score = 0;
 
-const slider = document.getElementById("slider");
-const coinText = document.getElementById("coins");
-const player = document.querySelector("#player img");
+let ballY = 150;
+let velocity = 0;
+let gravity = 0.8;
 
-setInterval(() => {
-    pos += direction * 2;
+let playing = false;
+let obstacles = [];
+let timer = 0;
 
-    if (pos >= 95) direction = -1;
-    if (pos <= 0) direction = 1;
+const ball = document.getElementById("ball");
+const scoreEl = document.getElementById("score");
+const coinsEl = document.getElementById("coins");
+const statusEl = document.getElementById("status");
+const gameScreen = document.getElementById("gameScreen");
+const main = document.getElementById("main");
+const menu = document.getElementById("menu");
+const startScreen = document.getElementById("startScreen");
+const phrases = document.getElementById("phrases");
 
-    slider.style.left = pos + "%";
-}, 10);
+/* OPEN */
+function openGame() {
+    main.style.display = "none";
+    menu.style.display = "none";
+    gameScreen.style.display = "block";
 
-function hit() {
-    player.classList.add("kick");
+    resetGame();
 
-    setTimeout(() => {
-        player.classList.remove("kick");
-    }, 200);
+    ballY = 150;
+    velocity = 0;
+}
 
-    if (pos >= 45 && pos <= 55) {
-        coins += 1;
-    } else if (pos >= 35 && pos <= 65) {
-        coins += 0.3;
+/* CLOSE */
+function closeGame() {
+    main.style.display = "block";
+    menu.style.display = "flex";
+    gameScreen.style.display = "none";
+    playing = false;
+}
+
+/* RESET */
+function resetGame() {
+    score = 0;
+    obstacles.forEach(o => o.remove());
+    obstacles = [];
+    startScreen.style.display = "flex";
+    scoreEl.innerText = 0;
+}
+
+/* START */
+function startGame() {
+    startScreen.style.display = "none";
+    playing = true;
+    loop();
+    phraseLoop();
+}
+
+/* JUMP */
+document.addEventListener("click", () => {
+    if (!playing) return;
+    velocity = -11;
+});
+
+/* LOOP */
+function loop() {
+    if (!playing) return;
+
+    velocity += gravity;
+    ballY += velocity;
+
+    if (ballY < 0) {
+        ballY = 0;
+        velocity = 0;
     }
 
-    coinText.innerText = coins.toFixed(1);
+    ball.style.bottom = ballY + "px";
+
+    timer++;
+    if (timer > 90) {
+        spawnObstacle();
+        timer = 0;
+    }
+
+    obstacles.forEach((obs, i) => {
+        let x = parseInt(obs.style.left);
+        x -= 6;
+        obs.style.left = x + "px";
+
+        let hitX = x < 140 && x > 80;
+        let hitY = ballY < 90;
+
+        if (hitX && hitY) {
+            gameOver();
+        }
+
+        if (x < -60) {
+            obs.remove();
+            obstacles.splice(i, 1);
+
+            score++;
+            coins++;
+
+            scoreEl.innerText = score;
+            coinsEl.innerText = coins + " FC";
+        }
+    });
+
+    requestAnimationFrame(loop);
+}
+
+/* SPAWN */
+function spawnObstacle() {
+    let obs = document.createElement("div");
+    obs.className = "obstacle";
+    obs.style.left = window.innerWidth + "px";
+    gameScreen.appendChild(obs);
+    obstacles.push(obs);
+}
+
+/* GAME OVER */
+function gameOver() {
+    playing = false;
+    statusEl.innerText = "❌ Game Over";
+    startScreen.style.display = "flex";
+}
+
+/* PHRASES */
+const texts = [
+    "GOAL MODE 🔥",
+    "FOOTY POWER ⚽",
+    "NO MERCY 🧠",
+    "FAST RUN 💨",
+    "COIN RUSH 💰",
+    "LEGEND MODE 👑"
+];
+
+function phraseLoop() {
+    if (!playing) return;
+
+    let el = document.createElement("div");
+    el.className = "phrase";
+    el.innerText = texts[Math.floor(Math.random() * texts.length)];
+
+    el.style.top = Math.random() * 80 + "%";
+
+    phrases.appendChild(el);
+
+    setTimeout(() => el.remove(), 4000);
+
+    setTimeout(phraseLoop, 1200);
 }

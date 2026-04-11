@@ -3,283 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <title>Footy Coin - Ball Rush</title>
-
-<style>
-body {
-    margin: 0;
-    font-family: Arial;
-    overflow: hidden;
-    background: #0f172a;
-    color: white;
-}
-
-/* MAIN */
-.container { padding: 15px; }
-
-.balance {
-    font-size: 32px;
-    color: #00ff88;
-}
-
-/* MENU */
-.menu {
-    position: fixed;
-    bottom: 10px;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-}
-
-.menu button {
-    background: rgba(255,255,255,0.05);
-    border: none;
-    color: white;
-    padding: 12px;
-    border-radius: 12px;
-}
-
-.play {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: #00ff88;
-}
-
-/* GAME */
-#gameScreen {
-    display: none;
-    position: fixed;
-    inset: 0;
-}
-
-/* FIELD */
-.field {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, #15803d, #22c55e);
-}
-
-/* BALL */
-.ball {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    left: 100px;
-    bottom: 150px;
-    background:
-        radial-gradient(circle at 30% 30%, white, #ccc),
-        repeating-linear-gradient(60deg, black 0 6px, white 6px 12px);
-}
-
-/* OBSTACLE */
-.obstacle {
-    position: absolute;
-    width: 50px;
-    height: 90px;
-    bottom: 0;
-    background: linear-gradient(#ef4444, #7f1d1d);
-    border-radius: 10px;
-}
-
-/* UI */
-.ui {
-    position: absolute;
-    top: 20px;
-    width: 100%;
-    text-align: center;
-}
-
-#score {
-    font-size: 40px;
-    color: #00ff88;
-}
-
-#startScreen {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    background: rgba(0,0,0,0.6);
-}
-
-.startBtn {
-    padding: 15px 30px;
-    font-size: 20px;
-    border-radius: 12px;
-    border: none;
-    background: #00ff88;
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="container" id="main">
-    <div>Баланс</div>
-    <div class="balance" id="coins">0 FC</div>
+    <div class="card">
+        <div>Баланс</div>
+        <div class="balance" id="coins">0 FC</div>
+    </div>
 </div>
 
 <div id="gameScreen">
+
     <div class="field"></div>
+
+    <div class="logo">⚽ FOOTY COIN</div>
+
+    <div class="phrases" id="phrases"></div>
 
     <div class="ball" id="ball"></div>
 
     <div class="ui">
         <div id="score">0</div>
         <div id="status"></div>
-        <button onclick="closeGame()">⬅</button>
+        <button onclick="closeGame()" class="backBtn">⬅</button>
     </div>
 
     <div id="startScreen">
-        <div>
-            <h2>⚽ Ball Rush</h2>
-            <button class="startBtn" onclick="startGame()">START</button>
-        </div>
+        <h2>⚽ BALL RUSH</h2>
+        <button class="startBtn" onclick="startGame()">START</button>
     </div>
+
 </div>
 
 <div class="menu" id="menu">
-    <button>💰</button>
-    <button>👥</button>
+    <button>💰 Ввод</button>
+    <button>📤 Вывод</button>
     <button class="play" onclick="openGame()">⚽</button>
-    <button>🛒</button>
-    <button>👤</button>
+    <button>📊 Холд</button>
+    <button>👥 Рефералы</button>
 </div>
 
-<script>
-let coins = 0;
-let score = 0;
-
-let ballY = 150;
-let velocity = 0;
-let gravity = 0.8;
-
-let playing = false;
-let obstacles = [];
-let timer = 0;
-
-const ball = document.getElementById("ball");
-const scoreEl = document.getElementById("score");
-const coinsEl = document.getElementById("coins");
-const statusEl = document.getElementById("status");
-const gameScreen = document.getElementById("gameScreen");
-const main = document.getElementById("main");
-const menu = document.getElementById("menu");
-const startScreen = document.getElementById("startScreen");
-
-/* OPEN */
-function openGame() {
-    main.style.display = "none";
-    menu.style.display = "none";
-    gameScreen.style.display = "block";
-    resetGame();
-}
-
-/* CLOSE */
-function closeGame() {
-    main.style.display = "block";
-    menu.style.display = "flex";
-    gameScreen.style.display = "none";
-    playing = false;
-}
-
-/* RESET */
-function resetGame() {
-    score = 0;
-    ballY = 150;
-    velocity = 0;
-
-    obstacles.forEach(o => o.remove());
-    obstacles = [];
-
-    startScreen.style.display = "flex";
-    scoreEl.innerText = 0;
-}
-
-/* START */
-function startGame() {
-    startScreen.style.display = "none";
-    playing = true;
-    loop();
-}
-
-/* JUMP */
-document.addEventListener("click", () => {
-    if (!playing) return;
-    velocity = -12;
-});
-
-/* LOOP */
-function loop() {
-    if (!playing) return;
-
-    velocity += gravity;
-    ballY += velocity;
-
-    if (ballY < 0) {
-        ballY = 0;
-        velocity = 0;
-    }
-
-    ball.style.bottom = ballY + "px";
-
-    /* spawn */
-    timer++;
-    if (timer > 90) {
-        spawnObstacle();
-        timer = 0;
-    }
-
-    /* move obstacles */
-    obstacles.forEach((obs, i) => {
-        let x = parseInt(obs.style.left);
-        x -= 6;
-        obs.style.left = x + "px";
-
-        let ballX = 100;
-        let obsX = x;
-
-        let hitX = obsX < ballX + 40 && obsX + 50 > ballX;
-        let hitY = ballY < 90;
-
-        if (hitX && hitY) {
-            gameOver();
-        }
-
-        if (x < -60) {
-            obs.remove();
-            obstacles.splice(i, 1);
-
-            score++;
-            coins++;
-
-            scoreEl.innerText = score;
-            coinsEl.innerText = coins + " FC";
-        }
-    });
-
-    requestAnimationFrame(loop);
-}
-
-/* OBSTACLE */
-function spawnObstacle() {
-    let obs = document.createElement("div");
-    obs.className = "obstacle";
-    obs.style.left = window.innerWidth + "px";
-    gameScreen.appendChild(obs);
-    obstacles.push(obs);
-}
-
-/* GAME OVER */
-function gameOver() {
-    playing = false;
-    statusEl.innerText = "❌ Game Over";
-    startScreen.style.display = "flex";
-}
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>

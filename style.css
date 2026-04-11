@@ -1,7 +1,8 @@
 body {
     margin: 0;
     font-family: Arial;
-    background: radial-gradient(circle at top, #0f172a, #020617);
+    overflow: hidden;
+    background: #0f172a;
     color: white;
 }
 
@@ -17,128 +18,12 @@ body {
     margin-bottom: 15px;
 }
 
-.center {
-    text-align: center;
-}
-
 .balance {
     font-size: 32px;
     color: #00ff88;
 }
 
-/* GAME */
-#gameScreen {
-    display: none;
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-}
-
-/* стадион */
-.stadium {
-    position: absolute;
-    inset: 0;
-    background: url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2") center/cover;
-    filter: brightness(0.4);
-}
-
-.overlay {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at bottom, transparent, black 90%);
-}
-
-/* игрок */
-.player-zone {
-    position: absolute;
-    bottom: 120px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.player-glow {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: #00ff88;
-    filter: blur(40px);
-}
-
-/* мяч */
-.ball {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background:
-        radial-gradient(circle at 30% 30%, white, #ddd),
-        repeating-linear-gradient(60deg, black 0 5px, white 5px 10px);
-    bottom: 200px;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 0 20px white;
-}
-
-/* UI */
-.top-ui {
-    position: absolute;
-    top: 40px;
-    width: 100%;
-    text-align: center;
-}
-
-#score {
-    font-size: 40px;
-    color: #00ff88;
-}
-
-/* кнопки */
-.start-btn {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px 40px;
-    font-size: 20px;
-    border-radius: 15px;
-    border: none;
-    background: linear-gradient(90deg, #00ff88, #00cc66);
-}
-
-.kick-btn {
-    display: none;
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    border: none;
-    font-size: 22px;
-    background: radial-gradient(circle, #00ff88, #00cc66);
-    box-shadow: 0 0 30px #00ff88;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: translateX(-50%) scale(1); }
-    50% { transform: translateX(-50%) scale(1.1); }
-    100% { transform: translateX(-50%) scale(1); }
-}
-
-.back-btn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    background: rgba(0,0,0,0.5);
-}
-
-/* меню */
+/* MENU */
 .menu {
     position: fixed;
     bottom: 10px;
@@ -160,19 +45,117 @@ body {
     height: 70px;
     border-radius: 50%;
     background: #00ff88;
-    font-size: 26px;
-    transform: translateY(-20px);
 }
 
-/* тряска */
-.shake {
-    animation: shake 0.3s;
+/* GAME */
+#gameScreen {
+    display: none;
+    position: fixed;
+    inset: 0;
 }
 
-@keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
-    100% { transform: translateX(0); }
+/* FIELD */
+.field {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1), transparent 40%),
+        radial-gradient(circle at 80% 60%, rgba(0,255,136,0.15), transparent 40%),
+        linear-gradient(to top, #15803d, #22c55e);
+}
+
+/* LOGO */
+.logo {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #00ff88;
+    font-size: 18px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px #00ff88;
+}
+
+/* BALL */
+.ball {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    left: 100px;
+    bottom: 150px;
+    background:
+        radial-gradient(circle at 30% 30%, white, #ccc),
+        repeating-linear-gradient(60deg, black 0 6px, white 6px 12px);
+}
+
+/* OBSTACLES */
+.obstacle {
+    position: absolute;
+    width: 50px;
+    height: 90px;
+    bottom: 0;
+    background: linear-gradient(#ef4444, #7f1d1d);
+    border-radius: 10px;
+}
+
+/* UI */
+.ui {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+#score {
+    font-size: 40px;
+    color: #00ff88;
+}
+
+.backBtn {
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+}
+
+/* START SCREEN */
+#startScreen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: rgba(0,0,0,0.6);
+}
+
+.startBtn {
+    padding: 15px 30px;
+    font-size: 20px;
+    border-radius: 12px;
+    border: none;
+    background: #00ff88;
+}
+
+/* PHRASES */
+.phrases {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.phrase {
+    position: absolute;
+    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+    animation: fly 4s linear forwards;
+}
+
+@keyframes fly {
+    from { transform: translateX(100vw); }
+    to { transform: translateX(-200px); }
 }

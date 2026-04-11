@@ -126,5 +126,13 @@ body {
 #tapZone {
     position: absolute;
     inset: 0;
-    z-index: 10;
+    z-index: 10;#ball {
+    position: fixed !important;
+    width: 60px !important;
+    height: 60px !important;
+    background: red !important;
+    left: 100px !important;
+    bottom: 150px !important;
+    z-index: 9999 !important;
+}
 }}

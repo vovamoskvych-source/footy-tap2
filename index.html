@@ -2,56 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Footy Coin</title>
-
-<!-- PHASER -->
-<script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+<title>Footy Coin - Ball Rush</title>
 
 <style>
 body {
     margin: 0;
     font-family: Arial;
-    background: radial-gradient(circle at top, #0f172a, #020617);
+    overflow: hidden;
+    background: #0f172a;
     color: white;
 }
 
 /* MAIN */
-.container {
-    padding: 15px;
-}
-
-.card {
-    background: rgba(255,255,255,0.05);
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 15px;
-}
+.container { padding: 15px; }
 
 .balance {
     font-size: 32px;
     color: #00ff88;
 }
 
-.title {
-    color: #00ff88;
-    margin-bottom: 10px;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.action {
-    padding: 15px;
-    border-radius: 12px;
-    border: none;
-    background: rgba(255,255,255,0.05);
-    color: white;
-}
-
-/* MENU (НЕ ТРОГАЕМ) */
+/* MENU */
 .menu {
     position: fixed;
     bottom: 10px;
@@ -73,7 +43,6 @@ body {
     height: 70px;
     border-radius: 50%;
     background: #00ff88;
-    font-size: 26px;
 }
 
 /* GAME */
@@ -81,37 +50,97 @@ body {
     display: none;
     position: fixed;
     inset: 0;
-    background: black;
+}
+
+/* FIELD */
+.field {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #15803d, #22c55e);
+}
+
+/* BALL */
+.ball {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    left: 100px;
+    bottom: 150px;
+    background:
+        radial-gradient(circle at 30% 30%, white, #ccc),
+        repeating-linear-gradient(60deg, black 0 6px, white 6px 12px);
+}
+
+/* OBSTACLE */
+.obstacle {
+    position: absolute;
+    width: 50px;
+    height: 90px;
+    bottom: 0;
+    background: linear-gradient(#ef4444, #7f1d1d);
+    border-radius: 10px;
+}
+
+/* UI */
+.ui {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+#score {
+    font-size: 40px;
+    color: #00ff88;
+}
+
+#startScreen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: rgba(0,0,0,0.6);
+}
+
+.startBtn {
+    padding: 15px 30px;
+    font-size: 20px;
+    border-radius: 12px;
+    border: none;
+    background: #00ff88;
 }
 </style>
 </head>
 
 <body>
 
-<!-- MAIN -->
 <div class="container" id="main">
-
-    <div class="card">
-        <div>Баланс</div>
-        <div class="balance" id="coins">0 FC</div>
-    </div>
-
-    <div class="card">
-        <div class="title">Финансы</div>
-        <div class="grid">
-            <button class="action">💸 Ввод</button>
-            <button class="action">💰 Вывод</button>
-            <button class="action">⏳ Hold</button>
-            <button class="action">👥 Друзья</button>
-        </div>
-    </div>
-
+    <div>Баланс</div>
+    <div class="balance" id="coins">0 FC</div>
 </div>
 
-<!-- GAME -->
-<div id="gameScreen"></div>
+<div id="gameScreen">
+    <div class="field"></div>
 
-<!-- MENU -->
+    <div class="ball" id="ball"></div>
+
+    <div class="ui">
+        <div id="score">0</div>
+        <div id="status"></div>
+        <button onclick="closeGame()">⬅</button>
+    </div>
+
+    <div id="startScreen">
+        <div>
+            <h2>⚽ Ball Rush</h2>
+            <button class="startBtn" onclick="startGame()">START</button>
+        </div>
+    </div>
+</div>
+
 <div class="menu" id="menu">
     <button>💰</button>
     <button>👥</button>
@@ -121,86 +150,136 @@ body {
 </div>
 
 <script>
-let game;
+let coins = 0;
+let score = 0;
 
+let ballY = 150;
+let velocity = 0;
+let gravity = 0.8;
+
+let playing = false;
+let obstacles = [];
+let timer = 0;
+
+const ball = document.getElementById("ball");
+const scoreEl = document.getElementById("score");
+const coinsEl = document.getElementById("coins");
+const statusEl = document.getElementById("status");
+const gameScreen = document.getElementById("gameScreen");
+const main = document.getElementById("main");
+const menu = document.getElementById("menu");
+const startScreen = document.getElementById("startScreen");
+
+/* OPEN */
 function openGame() {
     main.style.display = "none";
-    gameScreen.style.display = "block";
     menu.style.display = "none";
-
-    startPhaser();
+    gameScreen.style.display = "block";
+    resetGame();
 }
 
+/* CLOSE */
 function closeGame() {
-    location.reload();
+    main.style.display = "block";
+    menu.style.display = "flex";
+    gameScreen.style.display = "none";
+    playing = false;
 }
 
-/* PHASER */
-function startPhaser() {
+/* RESET */
+function resetGame() {
+    score = 0;
+    ballY = 150;
+    velocity = 0;
 
-    if (game) return;
+    obstacles.forEach(o => o.remove());
+    obstacles = [];
 
-    const config = {
-        type: Phaser.AUTO,
-        width: window.innerWidth,
-        height: window.innerHeight,
-        parent: "gameScreen",
-        physics: {
-            default: "arcade",
-            arcade: { gravity: { y: 800 } }
-        },
-        scene: {
-            preload,
-            create,
-            update
-        }
-    };
+    startScreen.style.display = "flex";
+    scoreEl.innerText = 0;
+}
 
-    game = new Phaser.Game(config);
+/* START */
+function startGame() {
+    startScreen.style.display = "none";
+    playing = true;
+    loop();
+}
 
-    let player;
-    let obstacles;
-    let score = 0;
-    let text;
+/* JUMP */
+document.addEventListener("click", () => {
+    if (!playing) return;
+    velocity = -12;
+});
 
-    function preload() {
-        this.load.image("ball", "https://i.imgur.com/7QF5F0d.png"); // норм мяч
-        this.load.image("block", "https://i.imgur.com/6X12Q0F.png"); // препятствие
-        this.load.image("bg", "https://i.imgur.com/3e5Z5Zs.jpg"); // стадион
+/* LOOP */
+function loop() {
+    if (!playing) return;
+
+    velocity += gravity;
+    ballY += velocity;
+
+    if (ballY < 0) {
+        ballY = 0;
+        velocity = 0;
     }
 
-    function create() {
+    ball.style.bottom = ballY + "px";
 
-        this.add.image(0,0,"bg").setOrigin(0).setDisplaySize(this.scale.width, this.scale.height);
+    /* spawn */
+    timer++;
+    if (timer > 90) {
+        spawnObstacle();
+        timer = 0;
+    }
 
-        player = this.physics.add.sprite(200, 300, "ball");
-        player.setBounce(0.3);
-        player.setCollideWorldBounds(true);
+    /* move obstacles */
+    obstacles.forEach((obs, i) => {
+        let x = parseInt(obs.style.left);
+        x -= 6;
+        obs.style.left = x + "px";
 
-        obstacles = this.physics.add.group();
+        let ballX = 100;
+        let obsX = x;
 
-        this.input.on("pointerdown", () => {
-            player.setVelocityY(-400);
-        });
+        let hitX = obsX < ballX + 40 && obsX + 50 > ballX;
+        let hitY = ballY < 90;
 
-        this.time.addEvent({
-            delay: 1500,
-            loop: true,
-            callback: () => {
-                let obs = obstacles.create(this.scale.width, 400, "block");
-                obs.setVelocityX(-250);
-            }
-        });
+        if (hitX && hitY) {
+            gameOver();
+        }
 
-        this.physics.add.collider(player, obstacles, () => {
-            this.scene.restart();
-        });
+        if (x < -60) {
+            obs.remove();
+            obstacles.splice(i, 1);
 
-        text = this.add.text(20,20,"0",{fontSize:"30px",fill:"#fff"});
+            score++;
+            coins++;
 
-        this.time.addEvent({
-            delay: 1000,
-            loop: true,
-            callback: () => {
-                score++;
-                text.
+            scoreEl.innerText = score;
+            coinsEl.innerText = coins + " FC";
+        }
+    });
+
+    requestAnimationFrame(loop);
+}
+
+/* OBSTACLE */
+function spawnObstacle() {
+    let obs = document.createElement("div");
+    obs.className = "obstacle";
+    obs.style.left = window.innerWidth + "px";
+    gameScreen.appendChild(obs);
+    obstacles.push(obs);
+}
+
+/* GAME OVER */
+function gameOver() {
+    playing = false;
+    statusEl.innerText = "❌ Game Over";
+    startScreen.style.display = "flex";
+}
+</script>
+
+</body>
+</html>

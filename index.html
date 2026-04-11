@@ -7,154 +7,287 @@
 <style>
 body {
     margin: 0;
-    overflow: hidden;
-    background: black;
     font-family: Arial;
-}
-
-.ui {
-    position: fixed;
-    top: 20px;
-    width: 100%;
-    text-align: center;
+    background: radial-gradient(circle at top, #0f172a, #020617);
     color: white;
 }
 
-.score {
-    font-size: 40px;
+/* MAIN */
+.container {
+    padding: 15px;
+}
+
+.card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.balance {
+    font-size: 32px;
     color: #00ff88;
+}
+
+/* MENU */
+.menu {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.menu button {
+    background: rgba(255,255,255,0.05);
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.play {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #00ff88;
+    font-size: 26px;
+    transform: translateY(-20px);
+}
+
+/* GAME */
+#gameScreen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+}
+
+/* СТАДИОН */
+.field {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 50% 20%, rgba(255,255,255,0.1), transparent 60%),
+        linear-gradient(to bottom, #0b1220 0%, #111827 40%, #14532d 100%);
+}
+
+/* ТРИБУНЫ */
+.field::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 45%;
+    background: repeating-linear-gradient(
+        to right,
+        #111 0px,
+        #111 4px,
+        #222 4px,
+        #222 8px
+    );
+    opacity: 0.6;
+}
+
+/* ЛИНИИ ПОЛЯ */
+.field::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 55%;
+    background:
+        linear-gradient(white, white) center/2px 100% no-repeat,
+        radial-gradient(circle at center, transparent 80px, white 82px, white 84px, transparent 86px);
+    opacity: 0.25;
+}
+
+/* ВОРОТА */
+.goal {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 90px;
+    border: 4px solid white;
+    border-radius: 5px;
+}
+
+/* ИГРОК */
+.player {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 120px;
+}
+
+/* МЯЧ */
+.ball {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 30% 30%, white, #ccc),
+        repeating-linear-gradient(60deg, black 0 6px, white 6px 12px);
+    bottom: 180px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* UI */
+.ui {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+/* КНОПКА */
+#kickBtn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: none;
+    font-size: 22px;
+    background: radial-gradient(circle, #00ff88, #00cc66);
+}
+
+/* КНОПКИ */
+button {
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: none;
 }
 </style>
 </head>
 
 <body>
 
-<div class="ui">
-    <div class="score" id="score">0</div>
-    <div id="status">Жми чтобы набивать</div>
+<!-- MAIN -->
+<div class="container" id="main">
+    <div class="card">
+        <div>Баланс</div>
+        <div class="balance" id="coins">0 FC</div>
+    </div>
 </div>
 
-<canvas id="game"></canvas>
+<!-- GAME -->
+<div id="gameScreen">
+
+    <div class="field"></div>
+    <div class="goal"></div>
+
+    <div class="player">🧍‍♂️</div>
+    <div class="ball" id="ball"></div>
+
+    <div class="ui">
+        <h2>⚽ Игра</h2>
+        <button id="startBtn" onclick="startGame()">START</button>
+        <p id="score">0</p>
+        <p id="status"></p>
+        <button id="kickBtn" onclick="kick()">KICK</button>
+        <br><br>
+        <button onclick="closeGame()">⬅ Назад</button>
+    </div>
+
+</div>
+
+<!-- MENU -->
+<div class="menu" id="menu">
+    <button>💰</button>
+    <button>👥</button>
+    <button class="play" onclick="openGame()">⚽</button>
+    <button>🛒</button>
+    <button>👤</button>
+</div>
 
 <script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-/* ИГРА */
+let coins = 0;
 let score = 0;
-let playing = true;
 
-let ball = {
-    x: canvas.width / 2,
-    y: canvas.height - 200,
-    r: 20,
-    velocity: 0
-};
+let ballY = 180;
+let velocity = 0;
+let gravity = -0.2;
 
-let gravity = 0.6;
+let playing = false;
 
-/* ЦИКЛ */
+function updateCoins() {
+    document.getElementById("coins").innerText = coins + " FC";
+}
+function openGame() {
+    main.style.display = "none";
+    gameScreen.style.display = "block";
+    menu.style.display = "none";
+}
+
+function closeGame() {
+    main.style.display = "block";
+    gameScreen.style.display = "none";
+    menu.style.display = "flex";
+    playing = false;
+}
+
+/* старт */
+function startGame() {
+    score = 0;
+    ballY = 180;
+    velocity = 0;
+    playing = true;
+
+    startBtn.style.display = "none";
+    kickBtn.style.display = "block";
+    status.innerText = "";
+
+    loop();
+}
+
+/* физика */
 function loop() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if (!playing) return;
 
-    drawStadium();
-    drawGoal();
-    drawPlayer();
-    updateBall();
-    drawBall();
+    velocity += gravity;
+    ballY += velocity;
+
+    if (ballY <= 100) {
+        lose();
+        return;
+    }
+
+    ball.style.bottom = ballY + "px";
 
     requestAnimationFrame(loop);
 }
-loop();
 
-/* СТАДИОН */
-function drawStadium() {
-    // небо
-    let grad = ctx.createLinearGradient(0,0,0,canvas.height);
-    grad.addColorStop(0, "#0f172a");
-    grad.addColorStop(1, "#020617");
-    ctx.fillStyle = grad;
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    // трибуны
-    ctx.fillStyle = "#111";
-    ctx.fillRect(0, 0, canvas.width, canvas.height/2);
-
-    // поле
-    ctx.fillStyle = "#1f7a3d";
-    ctx.fillRect(0, canvas.height/2, canvas.width, canvas.height/2);
-}
-
-/* ВОРОТА */
-function drawGoal() {
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 4;
-
-    let w = 200;
-    let h = 100;
-
-    ctx.strokeRect(
-        canvas.width/2 - w/2,
-        canvas.height/2 - 50,
-        w,
-        h
-    );
-}
-
-/* ИГРОК */
-function drawPlayer() {
-    let x = canvas.width/2;
-    let y = canvas.height - 120;
-
-    ctx.fillStyle = "#00ff88";
-
-    // тело
-    ctx.fillRect(x - 10, y - 40, 20, 40);
-
-    // голова
-    ctx.beginPath();
-    ctx.arc(x, y - 55, 10, 0, Math.PI*2);
-    ctx.fill();
-}
-
-/* МЯЧ */
-function drawBall() {
-    ctx.fillStyle = "white";
-    ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
-    ctx.fill();
-}
-
-/* ФИЗИКА */
-function updateBall() {
+/* удар */
+function kick() {
     if (!playing) return;
 
-    ball.velocity += gravity;
-    ball.y += ball.velocity;
-
-    if (ball.y > canvas.height - 100) {
-        lose();
-    }
-}
-
-/* УДАР */
-window.addEventListener("click", () => {
-    if (!playing) return;
-
-    ball.velocity = -12;
+    velocity = 9;
     score++;
 
-    document.getElementById("score").innerText = score;
-});
+    coins += 1;
+    updateCoins();
 
-/* ПРОИГРЫШ */
+    scoreEl.innerText = score;
+}
+
+/* проигрыш */
 function lose() {
     playing = false;
-    document.getElementById("status").innerText =
-        "❌ Упал! Счёт: " + score;
+
+    status.innerText = "❌ Упал! Счёт: " + score;
+
+    startBtn.style.display = "inline-block";
+    kickBtn.style.display = "none";
 }
 </script>
 

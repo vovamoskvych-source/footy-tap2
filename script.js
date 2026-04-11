@@ -14,34 +14,25 @@ let timer = 0;
 const ball = document.getElementById("ball");
 const scoreEl = document.getElementById("score");
 const coinsEl = document.getElementById("coins");
-const statusEl = document.getElementById("status");
-const phrases = document.getElementById("phrases");
 
 const gameScreen = document.getElementById("gameScreen");
 const main = document.getElementById("main");
-const menu = document.getElementById("menu");
 const startScreen = document.getElementById("startScreen");
 
-/* OPEN */
 function openGame() {
     main.style.display = "none";
-    menu.style.display = "none";
     gameScreen.style.display = "block";
-    resetGame();
+    reset();
 }
 
-/* CLOSE */
 function closeGame() {
     main.style.display = "block";
-    menu.style.display = "flex";
     gameScreen.style.display = "none";
-
     playing = false;
     loopStarted = false;
 }
 
-/* RESET */
-function resetGame() {
+function reset() {
     score = 0;
     ballY = 150;
     velocity = 0;
@@ -51,27 +42,23 @@ function resetGame() {
     obstacles = [];
 
     scoreEl.innerText = "0";
-    statusEl.innerText = "";
-
     startScreen.style.display = "flex";
 
     ball.style.bottom = "150px";
 }
 
-/* START */
 function startGame() {
     startScreen.style.display = "none";
     playing = true;
+
+    velocity = 0;
 
     if (!loopStarted) {
         loopStarted = true;
         requestAnimationFrame(loop);
     }
-
-    phraseLoop();
 }
 
-/* JUMP */
 let canJump = true;
 
 document.addEventListener("click", () => {
@@ -84,17 +71,25 @@ document.addEventListener("click", () => {
     setTimeout(() => canJump = true, 150);
 });
 
-/* LOOP */
 function loop() {
     if (!loopStarted) return;
 
     if (playing) {
 
         velocity += gravity;
+
+        if (velocity > 12) velocity = 12;
+        if (velocity < -12) velocity = -12;
+
         ballY += velocity;
 
         if (ballY < 0) {
             ballY = 0;
+            velocity = 0;
+        }
+
+        if (ballY > 400) {
+            ballY = 400;
             velocity = 0;
         }
 
@@ -113,22 +108,15 @@ function loop() {
             x -= 6;
             obs.style.left = x + "px";
 
-            let hitX = x < 140 && x > 80;
-            let hitY = ballY < 90;
-
-            if (hitX && hitY) {
+            if (x < 140 && x > 80 && ballY < 90) {
                 gameOver();
             }
 
             if (x < -60) {
                 obs.remove();
                 obstacles.splice(i, 1);
-
                 score++;
-                coins++;
-
                 scoreEl.innerText = score;
-                coinsEl.innerText = coins + " FC";
             }
         }
     }
@@ -136,7 +124,6 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
-/* OBSTACLE */
 function spawnObstacle() {
     let obs = document.createElement("div");
     obs.className = "obstacle";
@@ -145,32 +132,7 @@ function spawnObstacle() {
     obstacles.push(obs);
 }
 
-/* GAME OVER */
 function gameOver() {
     playing = false;
     startScreen.style.display = "flex";
-}
-
-/* PHRASES */
-const texts = [
-    "GOAL MODE 🔥",
-    "FOOTY POWER ⚽",
-    "NO MERCY 🧠",
-    "FAST RUN 💨",
-    "COIN RUSH 💰",
-    "LEGEND MODE 👑"
-];
-
-function phraseLoop() {
-    if (!playing) return;
-
-    let el = document.createElement("div");
-    el.className = "phrase";
-    el.innerText = texts[Math.floor(Math.random() * texts.length)];
-    el.style.top = Math.random() * 80 + "%";
-
-    phrases.appendChild(el);
-
-    setTimeout(() => el.remove(), 4000);
-    setTimeout(phraseLoop, 1200);
 }

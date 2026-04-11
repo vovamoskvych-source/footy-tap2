@@ -6,7 +6,6 @@ body {
     color: white;
 }
 
-/* TOP */
 .top {
     padding: 15px;
 }
@@ -36,7 +35,6 @@ body {
     color: white;
 }
 
-/* GAME */
 #gameScreen {
     display: none;
     position: fixed;
@@ -44,48 +42,38 @@ body {
     overflow: hidden;
 }
 
-/* FIELD */
 .field {
     position: absolute;
     inset: 0;
-    background:
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1), transparent 40%),
-        radial-gradient(circle at 80% 60%, rgba(0,255,136,0.15), transparent 40%),
-        linear-gradient(to top, #15803d, #22c55e);
+    background: linear-gradient(to top, #15803d, #22c55e);
 }
 
-/* LOGO */
 .logo {
     position: absolute;
-    top: 15px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
     color: #00ff88;
-    font-size: 18px;
-    letter-spacing: 2px;
 }
 
-/* BALL */
-.ball {
+#ball {
     position: absolute;
     width: 50px;
     height: 50px;
     left: 100px;
     bottom: 150px;
     border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, white, #ccc);
+    background: white;
 }
 
-/* OBSTACLES */
 .obstacle {
     position: absolute;
-    width: 50px;
-    height: 90px;
+    width: 40px;
+    height: 80px;
     bottom: 0;
     background: red;
 }
 
-/* UI */
 .ui {
     position: absolute;
     top: 20px;
@@ -98,7 +86,6 @@ body {
     color: #00ff88;
 }
 
-/* START */
 #startScreen {
     position: absolute;
     inset: 0;
@@ -110,12 +97,11 @@ body {
 .startBtn {
     padding: 15px 30px;
     font-size: 20px;
+    background: #00ff88;
     border: none;
     border-radius: 12px;
-    background: #00ff88;
 }
 
-/* MENU */
 .menu {
     position: fixed;
     bottom: 10px;
@@ -137,29 +123,4 @@ body {
     height: 70px;
     border-radius: 50%;
     background: #00ff88;
-}
-
-/* PHRASES */
-.phrases {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-.phrase {
-    position: absolute;
-    font-size: 16px;
-    color: rgba(255,255,255,0.7);
-    animation: fly 4s linear forwards;
-}
-
-@keyframes fly {
-    from { transform: translateX(100vw); }
-    to { transform: translateX(-200px); }
-}
-#ball {
-    outline: 3px solid red !important;
-    transform: none !important;
-    animation: none !important;
 }

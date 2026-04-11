@@ -8,7 +8,7 @@
 body {
     margin: 0;
     font-family: Arial;
-    background: #0f172a;
+    background: radial-gradient(circle at top, #0f172a, #020617);
     color: white;
 }
 
@@ -27,6 +27,26 @@ body {
 .balance {
     font-size: 32px;
     color: #00ff88;
+}
+
+.title {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #00ff88;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.action {
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255,255,255,0.05);
+    color: white;
 }
 
 /* MENU */
@@ -53,7 +73,6 @@ body {
     background: #00ff88;
     font-size: 26px;
     transform: translateY(-20px);
-    box-shadow: 0 0 20px #00ff88;
 }
 
 /* GAME */
@@ -64,56 +83,32 @@ body {
     overflow: hidden;
 }
 
-/* 🏟 СТАДИОН */
-.stadium {
+/* фон */
+.field {
     position: absolute;
-    inset: 0;
-    background: url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2") center/cover;
-    filter: brightness(0.5);
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(#111827, #14532d);
 }
 
-/* затемнение */
-.overlay {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at bottom, transparent, #000 85%);
-}
-
-/* 🥅 ВОРОТА */
-.goal {
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 220px;
-    height: 110px;
-    border: 4px solid white;
-    box-shadow: 0 0 20px rgba(255,255,255,0.5);
-}
-
-/* 👤 ИГРОК */
-.player {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 180px;
-    filter: drop-shadow(0 0 30px #00ff88);
-}
-
-/* ⚽ МЯЧ */
+/* мяч */
 .ball {
     position: absolute;
-    width: 45px;
-    height: 45px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background:
-        radial-gradient(circle at 30% 30%, white, #ccc),
-        repeating-linear-gradient(60deg, black 0 6px, white 6px 12px);
-    bottom: 220px;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 0 20px white;
+    background: white;
+    left: 80px;
+    bottom: 120px;
+}
+
+/* препятствия */
+.obstacle {
+    position: absolute;
+    width: 30px;
+    height: 60px;
+    background: red;
+    bottom: 120px;
 }
 
 /* UI */
@@ -125,32 +120,19 @@ body {
 }
 
 #score {
-    font-size: 40px;
+    font-size: 30px;
     color: #00ff88;
 }
 
-/* 🎮 КНОПКА */
-#kickBtn {
-    display: none;
+/* кнопка */
+#jumpBtn {
     position: fixed;
     bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 140px;
-    height: 140px;
+    right: 20px;
+    padding: 20px;
     border-radius: 50%;
-    border: none;
-    font-size: 22px;
-    background: radial-gradient(circle, #00ff88, #00cc66);
-    box-shadow: 0 0 40px #00ff88;
-}
-
-/* старт */
-#startBtn {
-    padding: 15px 30px;
-    border-radius: 12px;
-    border: none;
     background: #00ff88;
+    border: none;
 }
 </style>
 </head>
@@ -159,31 +141,44 @@ body {
 
 <!-- MAIN -->
 <div class="container" id="main">
+
     <div class="card">
         <div>Баланс</div>
         <div class="balance" id="coins">0 FC</div>
     </div>
+
+    <div class="card">
+        <div class="title">Финансы</div>
+        <div class="grid">
+            <button class="action">💸 Ввод</button>
+            <button class="action">💰 Вывод</button>
+            <button class="action">⏳ Hold</button>
+            <button class="action">👥 Друзья</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="title">Рефералы</div>
+        <p>Приглашено: <span id="refs">0</span></p>
+    </div>
+
 </div>
 
 <!-- GAME -->
 <div id="gameScreen">
 
-    <div class="stadium"></div>
-    <div class="overlay"></div>
+    <div class="field"></div>
 
-    <div class="goal"></div>
-    <div class="player">🧍‍♂️</div>
     <div class="ball" id="ball"></div>
 
     <div class="ui">
-        <h2>⚽ FOOTY COIN</h2>
-        <button id="startBtn" onclick="startGame()">START</button>
+        <h2>⚽ Ball Rush</h2>
         <div id="score">0</div>
-        <div id="status"></div>
+        <div id="status">Нажми чтобы прыгнуть</div>
+        <button onclick="closeGame()">⬅ Назад</button>
     </div>
 
-    <button id="kickBtn" onclick="kick()">KICK</button>
-    <button onclick="closeGame()">⬅</button>
+    <button id="jumpBtn">↑</button>
 
 </div>
 
@@ -200,18 +195,23 @@ body {
 let coins = 0;
 let score = 0;
 
-let ballY = 220;
+let ballY = 120;
 let velocity = 0;
-let gravity = -0.25;
+let gravity = -0.5;
 
+let obstacles = [];
 let playing = false;
 
+/* открыть игру */
 function openGame() {
     main.style.display = "none";
     gameScreen.style.display = "block";
     menu.style.display = "none";
+
+    startGame();
 }
 
+/* закрыть */
 function closeGame() {
     main.style.display = "block";
     gameScreen.style.display = "none";
@@ -219,57 +219,71 @@ function closeGame() {
     playing = false;
 }
 
+/* старт */
 function startGame() {
     score = 0;
-    ballY = 220;
+    ballY = 120;
     velocity = 0;
+    obstacles = [];
     playing = true;
-
-    startBtn.style.display = "none";
-    kickBtn.style.display = "block";
-    status.innerText = "";
 
     loop();
 }
 
+/* цикл */
 function loop() {
     if (!playing) return;
 
     velocity += gravity;
     ballY += velocity;
 
-    if (ballY <= 120) {
-        lose();
-        return;
-    }
+    if (ballY < 0) ballY = 0;
 
     ball.style.bottom = ballY + "px";
+
+    /* спавн препятствий */
+    if (Math.random() < 0.02) {
+        let obs = document.createElement("div");
+        obs.className = "obstacle";
+        obs.style.left = window.innerWidth + "px";
+        gameScreen.appendChild(obs);
+        obstacles.push(obs);
+    }
+
+    /* движение */
+    obstacles.forEach((obs, i) => {
+        let x = parseInt(obs.style.left);
+        x -= 5;
+        obs.style.left = x + "px";
+
+        /* столкновение */
+        if (x < 100 && x > 50 && ballY < 100) {
+            lose();
+        }
+
+        if (x < -50) {
+            obs.remove();
+            obstacles.splice(i, 1);
+            score++;
+            coins++;
+
+            document.getElementById("score").innerText = score;
+            document.getElementById("coins").innerText = coins + " FC";
+        }
+    });
 
     requestAnimationFrame(loop);
 }
 
-function kick() {
-    if (!playing) return;
-
+/* прыжок */
+document.getElementById("jumpBtn").onclick = () => {
     velocity = 10;
-    score++;
+};
 
-    coins += 1;
-
-    score.innerText = score;
-
-    ball.style.transform = "translateX(-50%) scale(1.2)";
-    setTimeout(() => {
-        ball.style.transform = "translateX(-50%) scale(1)";
-    }, 100);
-}
-
+/* проигрыш */
 function lose() {
     playing = false;
-    status.innerText = "❌ " + score;
-
-    startBtn.style.display = "block";
-    kickBtn.style.display = "none";
+    document.getElementById("status").innerText = "❌ Проиграл";
 }
 </script>
 

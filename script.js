@@ -13,11 +13,11 @@ const ball = document.getElementById("ball");
 const scoreEl = document.getElementById("score");
 const coinsEl = document.getElementById("coins");
 const statusEl = document.getElementById("status");
+
 const gameScreen = document.getElementById("gameScreen");
 const main = document.getElementById("main");
 const menu = document.getElementById("menu");
 const startScreen = document.getElementById("startScreen");
-const phrases = document.getElementById("phrases");
 
 /* OPEN */
 function openGame() {
@@ -26,9 +26,6 @@ function openGame() {
     gameScreen.style.display = "block";
 
     resetGame();
-
-    ballY = 150;
-    velocity = 0;
 }
 
 /* CLOSE */
@@ -42,8 +39,12 @@ function closeGame() {
 /* RESET */
 function resetGame() {
     score = 0;
+    ballY = 150;
+    velocity = 0;
+
     obstacles.forEach(o => o.remove());
     obstacles = [];
+
     startScreen.style.display = "flex";
     scoreEl.innerText = 0;
 }
@@ -53,10 +54,9 @@ function startGame() {
     startScreen.style.display = "none";
     playing = true;
     loop();
-    phraseLoop();
 }
 
-/* JUMP */
+/* FIX ПРЫЖКА */
 document.addEventListener("click", () => {
     if (!playing) return;
     velocity = -11;
@@ -121,32 +121,5 @@ function spawnObstacle() {
 /* GAME OVER */
 function gameOver() {
     playing = false;
-    statusEl.innerText = "❌ Game Over";
     startScreen.style.display = "flex";
-}
-
-/* PHRASES */
-const texts = [
-    "GOAL MODE 🔥",
-    "FOOTY POWER ⚽",
-    "NO MERCY 🧠",
-    "FAST RUN 💨",
-    "COIN RUSH 💰",
-    "LEGEND MODE 👑"
-];
-
-function phraseLoop() {
-    if (!playing) return;
-
-    let el = document.createElement("div");
-    el.className = "phrase";
-    el.innerText = texts[Math.floor(Math.random() * texts.length)];
-
-    el.style.top = Math.random() * 80 + "%";
-
-    phrases.appendChild(el);
-
-    setTimeout(() => el.remove(), 4000);
-
-    setTimeout(phraseLoop, 1200);
 }

@@ -2,48 +2,57 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Footy Coin - Ball Rush</title>
+<title>Footy Coin</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+<!-- MAIN -->
 <div class="container" id="main">
-    <div class="card">
-        <div>Баланс</div>
-        <div class="balance" id="coins">0 FC</div>
+
+    <div class="topBar">
+        <div class="balanceBlock">
+            <div class="balance" id="coins">0 FC</div>
+
+            <!-- КНОПКИ РЯДОМ С БАЛАНСОМ -->
+            <div class="miniMenu">
+                <button>Ввод</button>
+                <button>Вывод</button>
+                <button>Холд</button>
+                <button>Рефералы</button>
+            </div>
+        </div>
     </div>
+
 </div>
 
+<!-- GAME -->
 <div id="gameScreen">
 
     <div class="field"></div>
-
-    <div class="logo">⚽ FOOTY COIN</div>
-
-    <div class="phrases" id="phrases"></div>
 
     <div class="ball" id="ball"></div>
 
     <div class="ui">
         <div id="score">0</div>
         <div id="status"></div>
-        <button onclick="closeGame()" class="backBtn">⬅</button>
+        <button onclick="closeGame()">⬅</button>
     </div>
 
     <div id="startScreen">
-        <h2>⚽ BALL RUSH</h2>
-        <button class="startBtn" onclick="startGame()">START</button>
+        <button onclick="startGame()" class="startBtn">START</button>
     </div>
 
 </div>
 
+<!-- НИЖНЕЕ МЕНЮ (ВОЗВРАЩЕНО) -->
 <div class="menu" id="menu">
-    <button>💰 Ввод</button>
-    <button>📤 Вывод</button>
+    <button>💰</button>
+    <button>👥</button>
     <button class="play" onclick="openGame()">⚽</button>
-    <button>📊 Холд</button>
-    <button>👥 Рефералы</button>
+    <button>🛒</button>
+    <button>👤</button>
 </div>
 
 <script src="script.js"></script>

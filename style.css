@@ -6,21 +6,35 @@ body {
     color: white;
 }
 
-/* MAIN */
-.container {
+/* TOP */
+.topBar {
     padding: 15px;
 }
 
-.card {
-    background: rgba(255,255,255,0.05);
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 15px;
+.balanceBlock {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .balance {
-    font-size: 32px;
+    font-size: 28px;
     color: #00ff88;
+}
+
+/* мини кнопки */
+.miniMenu {
+    display: flex;
+    gap: 8px;
+}
+
+.miniMenu button {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: white;
 }
 
 /* MENU */
@@ -58,22 +72,7 @@ body {
 .field {
     position: absolute;
     inset: 0;
-    background:
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1), transparent 40%),
-        radial-gradient(circle at 80% 60%, rgba(0,255,136,0.15), transparent 40%),
-        linear-gradient(to top, #15803d, #22c55e);
-}
-
-/* LOGO */
-.logo {
-    position: absolute;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #00ff88;
-    font-size: 18px;
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px #00ff88;
+    background: linear-gradient(to top, #15803d, #22c55e);
 }
 
 /* BALL */
@@ -84,19 +83,16 @@ body {
     border-radius: 50%;
     left: 100px;
     bottom: 150px;
-    background:
-        radial-gradient(circle at 30% 30%, white, #ccc),
-        repeating-linear-gradient(60deg, black 0 6px, white 6px 12px);
+    background: radial-gradient(circle at 30% 30%, white, #ccc);
 }
 
-/* OBSTACLES */
+/* OBSTACLE */
 .obstacle {
     position: absolute;
     width: 50px;
     height: 90px;
     bottom: 0;
-    background: linear-gradient(#ef4444, #7f1d1d);
-    border-radius: 10px;
+    background: red;
 }
 
 /* UI */
@@ -112,50 +108,19 @@ body {
     color: #00ff88;
 }
 
-.backBtn {
-    margin-top: 10px;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    background: rgba(0,0,0,0.5);
-    color: white;
-}
-
-/* START SCREEN */
+/* START */
 #startScreen {
     position: absolute;
     inset: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-    background: rgba(0,0,0,0.6);
 }
 
 .startBtn {
     padding: 15px 30px;
     font-size: 20px;
-    border-radius: 12px;
-    border: none;
     background: #00ff88;
-}
-
-/* PHRASES */
-.phrases {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-.phrase {
-    position: absolute;
-    font-size: 16px;
-    color: rgba(255,255,255,0.7);
-    animation: fly 4s linear forwards;
-}
-
-@keyframes fly {
-    from { transform: translateX(100vw); }
-    to { transform: translateX(-200px); }
+    border: none;
+    border-radius: 12px;
 }

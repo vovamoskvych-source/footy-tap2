@@ -124,3 +124,14 @@ body {
     border: none;
     border-radius: 12px;
 }
+#gameScreen {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+}
+
+.ball {
+    position: absolute;
+    left: 100px;
+    bottom: 150px;
+}

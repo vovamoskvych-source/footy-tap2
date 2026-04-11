@@ -21,7 +21,7 @@ const main = document.getElementById("main");
 const menu = document.getElementById("menu");
 const startScreen = document.getElementById("startScreen");
 
-/* OPEN GAME */
+/* OPEN */
 function openGame() {
     main.style.display = "none";
     menu.style.display = "none";
@@ -30,7 +30,7 @@ function openGame() {
     resetGame();
 }
 
-/* CLOSE GAME */
+/* CLOSE */
 function closeGame() {
     main.style.display = "block";
     menu.style.display = "flex";
@@ -45,19 +45,21 @@ function resetGame() {
     score = 0;
     ballY = 150;
     velocity = 0;
+    timer = 0;
 
     obstacles.forEach(o => o.remove());
     obstacles = [];
-
-    timer = 0;
 
     scoreEl.innerText = "0";
     statusEl.innerText = "";
 
     startScreen.style.display = "flex";
+
+    // 🔥 ВАЖНО: принудительно ставим позицию
+    ball.style.bottom = "150px";
 }
 
-/* START GAME */
+/* START */
 function startGame() {
     startScreen.style.display = "none";
 
@@ -69,10 +71,10 @@ function startGame() {
     }
 }
 
-/* JUMP (СТАБИЛЬНЫЙ) */
+/* JUMP */
 let canJump = true;
 
-document.addEventListener("click", () => {
+document.addEventListener("click", (e) => {
     if (!playing) return;
     if (!canJump) return;
 
@@ -84,13 +86,12 @@ document.addEventListener("click", () => {
     }, 160);
 });
 
-/* MAIN LOOP (ОДИН РАЗ) */
+/* LOOP */
 function loop() {
     if (!gameRunning) return;
 
     if (playing) {
 
-        // physics
         velocity += gravity;
         ballY += velocity;
 
@@ -99,16 +100,15 @@ function loop() {
             velocity = 0;
         }
 
+        // 🔥 ЖЁСТКИЙ ФИКС (главное)
         ball.style.bottom = ballY + "px";
 
-        // spawn obstacles
         timer++;
         if (timer > 90) {
             spawnObstacle();
             timer = 0;
         }
 
-        // move obstacles
         for (let i = obstacles.length - 1; i >= 0; i--) {
             let obs = obstacles[i];
 
@@ -116,7 +116,6 @@ function loop() {
             x -= 6;
             obs.style.left = x + "px";
 
-            // HITBOX (нормальная)
             let hitX = x < 140 && x > 80;
             let hitY = ballY < 90;
 
@@ -140,12 +139,11 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
-/* SPAWN OBSTACLE */
+/* SPAWN */
 function spawnObstacle() {
     let obs = document.createElement("div");
     obs.className = "obstacle";
     obs.style.left = window.innerWidth + "px";
-
     gameScreen.appendChild(obs);
     obstacles.push(obs);
 }

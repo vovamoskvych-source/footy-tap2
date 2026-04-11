@@ -1,40 +1,22 @@
 body {
     margin: 0;
     font-family: Arial;
-    overflow: hidden;
     background: #0f172a;
     color: white;
 }
 
-.top {
-    padding: 15px;
+/* MAIN */
+#main {
+    padding: 20px;
 }
 
-.balanceBlock {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.card {
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 15px;
 }
 
-.balance {
-    font-size: 28px;
-    color: #00ff88;
-}
-
-.miniMenu {
-    display: flex;
-    gap: 8px;
-}
-
-.miniMenu button {
-    font-size: 12px;
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: none;
-    background: rgba(255,255,255,0.1);
-    color: white;
-}
-
+/* GAME */
 #gameScreen {
     display: none;
     position: fixed;
@@ -42,50 +24,40 @@ body {
     overflow: hidden;
 }
 
-.field {
+/* фон */
+.bg {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, #15803d, #22c55e);
+    background: linear-gradient(to top, #14532d, #22c55e);
 }
 
-.logo {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #00ff88;
-}
-
+/* мяч */
 #ball {
     position: absolute;
     width: 50px;
     height: 50px;
     left: 100px;
     bottom: 150px;
+
     border-radius: 50%;
-    background: white;
+    background:
+        radial-gradient(circle at 30% 30%, #fff, #ccc),
+        repeating-linear-gradient(45deg, #000 0 6px, #fff 6px 12px);
+
+    box-shadow: 0 0 15px white;
 }
 
-.obstacle {
-    position: absolute;
-    width: 40px;
-    height: 80px;
-    bottom: 0;
-    background: red;
-}
-
-.ui {
+/* score */
+#score {
     position: absolute;
     top: 20px;
     width: 100%;
     text-align: center;
-}
-
-#score {
     font-size: 40px;
     color: #00ff88;
 }
 
+/* start */
 #startScreen {
     position: absolute;
     inset: 0;
@@ -94,47 +66,7 @@ body {
     align-items: center;
 }
 
-.startBtn {
+#startScreen button {
     padding: 15px 30px;
     font-size: 20px;
-    background: #00ff88;
-    border: none;
-    border-radius: 12px;
-}
-
-.menu {
-    position: fixed;
-    bottom: 10px;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    background: red !important;
-z-index: 9999 !important;
-position: fixed !important;
-}
-
-.menu button {
-    background: rgba(255,255,255,0.05);
-    border: none;
-    color: white;
-    padding: 12px;
-    border-radius: 12px;
-}
-
-.play {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: #00ff88;
-#tapZone {
-    position: absolute;
-    inset: 0;
-    z-index: 10;#ball {
-    position: fixed !important;
-    width: 60px !important;
-    height: 60px !important;
-    background: red !important;
-    left: 100px !important;
-    bottom: 150px !important;
-    z-index: 9999 !important;
 }

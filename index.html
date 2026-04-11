@@ -1,29 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<style>
-body { margin:0; }
-
-#ball {
-    position: fixed;
-    width: 60px;
-    height: 60px;
-    background: red;
-    left: 100px;
-    bottom: 150px;
-    z-index: 9999;
-}
-</style>
-
+<title>Ball Rush</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1 style="color:red;">TEST 123</h1>
+<!-- MAIN MENU -->
+<div id="main">
+    <div class="card">
+        <h2>⚽ Footy Coin</h2>
+        <div id="coins">0 FC</div>
 
-<div id="ball"></div>
+        <button onclick="openGame()">PLAY</button>
+    </div>
+</div>
 
+<!-- GAME -->
+<div id="gameScreen">
+
+    <div class="bg"></div>
+
+    <div id="ball"></div>
+
+    <div id="score">0</div>
+
+    <div id="startScreen">
+        <button onclick="startGame()">START</button>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>

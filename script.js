@@ -47,7 +47,10 @@ function jump() {
 }
 
 /* 🔥 ТОЛЬКО ОДНО СОБЫТИЕ */
-document.addEventListener("touchstart", jump);
+const tapZone = document.getElementById("tapZone");
+
+tapZone.addEventListener("touchstart", jump);
+tapZone.addEventListener("click", jump);
 
 /* loop */
 function loop() {

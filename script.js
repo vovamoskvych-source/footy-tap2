@@ -6,6 +6,8 @@ let velocity = 0;
 let gravity = 0.8;
 
 let playing = false;
+let gameRunning = false;
+
 let obstacles = [];
 let timer = 0;
 
@@ -19,7 +21,7 @@ const main = document.getElementById("main");
 const menu = document.getElementById("menu");
 const startScreen = document.getElementById("startScreen");
 
-/* OPEN */
+/* OPEN GAME */
 function openGame() {
     main.style.display = "none";
     menu.style.display = "none";
@@ -28,12 +30,14 @@ function openGame() {
     resetGame();
 }
 
-/* CLOSE */
+/* CLOSE GAME */
 function closeGame() {
     main.style.display = "block";
     menu.style.display = "flex";
     gameScreen.style.display = "none";
+
     playing = false;
+    gameRunning = false;
 }
 
 /* RESET */
@@ -45,75 +49,103 @@ function resetGame() {
     obstacles.forEach(o => o.remove());
     obstacles = [];
 
+    timer = 0;
+
+    scoreEl.innerText = "0";
+    statusEl.innerText = "";
+
     startScreen.style.display = "flex";
-    scoreEl.innerText = 0;
 }
 
-/* START */
+/* START GAME */
 function startGame() {
     startScreen.style.display = "none";
+
     playing = true;
-    loop();
+
+    if (!gameRunning) {
+        gameRunning = true;
+        requestAnimationFrame(loop);
+    }
 }
 
-/* FIX ПРЫЖКА */
+/* JUMP (СТАБИЛЬНЫЙ) */
+let canJump = true;
+
 document.addEventListener("click", () => {
     if (!playing) return;
+    if (!canJump) return;
+
     velocity = -11;
+    canJump = false;
+
+    setTimeout(() => {
+        canJump = true;
+    }, 160);
 });
 
-/* LOOP */
+/* MAIN LOOP (ОДИН РАЗ) */
 function loop() {
-    if (!playing) return;
+    if (!gameRunning) return;
 
-    velocity += gravity;
-    ballY += velocity;
+    if (playing) {
 
-    if (ballY < 0) {
-        ballY = 0;
-        velocity = 0;
-    }
+        // physics
+        velocity += gravity;
+        ballY += velocity;
 
-    ball.style.bottom = ballY + "px";
-
-    timer++;
-    if (timer > 90) {
-        spawnObstacle();
-        timer = 0;
-    }
-
-    obstacles.forEach((obs, i) => {
-        let x = parseInt(obs.style.left);
-        x -= 6;
-        obs.style.left = x + "px";
-
-        let hitX = x < 140 && x > 80;
-        let hitY = ballY < 90;
-
-        if (hitX && hitY) {
-            gameOver();
+        if (ballY < 0) {
+            ballY = 0;
+            velocity = 0;
         }
 
-        if (x < -60) {
-            obs.remove();
-            obstacles.splice(i, 1);
+        ball.style.bottom = ballY + "px";
 
-            score++;
-            coins++;
-
-            scoreEl.innerText = score;
-            coinsEl.innerText = coins + " FC";
+        // spawn obstacles
+        timer++;
+        if (timer > 90) {
+            spawnObstacle();
+            timer = 0;
         }
-    });
+
+        // move obstacles
+        for (let i = obstacles.length - 1; i >= 0; i--) {
+            let obs = obstacles[i];
+
+            let x = parseInt(obs.style.left);
+            x -= 6;
+            obs.style.left = x + "px";
+
+            // HITBOX (нормальная)
+            let hitX = x < 140 && x > 80;
+            let hitY = ballY < 90;
+
+            if (hitX && hitY) {
+                gameOver();
+            }
+
+            if (x < -60) {
+                obs.remove();
+                obstacles.splice(i, 1);
+
+                score++;
+                coins++;
+
+                scoreEl.innerText = score;
+                coinsEl.innerText = coins + " FC";
+            }
+        }
+    }
 
     requestAnimationFrame(loop);
 }
 
-/* SPAWN */
+/* SPAWN OBSTACLE */
 function spawnObstacle() {
     let obs = document.createElement("div");
     obs.className = "obstacle";
     obs.style.left = window.innerWidth + "px";
+
     gameScreen.appendChild(obs);
     obstacles.push(obs);
 }
@@ -122,4 +154,5 @@ function spawnObstacle() {
 function gameOver() {
     playing = false;
     startScreen.style.display = "flex";
+    statusEl.innerText = "❌ Game Over";
 }

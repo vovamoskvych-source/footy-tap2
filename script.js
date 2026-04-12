@@ -1,78 +1,37 @@
-alert("SCRIPT 1 ЗАГРУЗИЛСЯ");
-const main = document.getElementById("main");
-const gameScreen = document.getElementById("gameScreen");
 const ball = document.getElementById("ball");
-const scoreEl = document.getElementById("score");
+const tapZone = document.getElementById("tapZone");
 
 let ballY = 150;
 let velocity = 0;
 
 const gravity = 0.8;
-const jumpPower = -11;
+const jumpPower = 12; // вверх
 
-let playing = false;
-let loopStarted = false;
+let playing = true;
 
-let score = 0;
-
-/* OPEN */
-function openGame() {
-    main.style.display = "none";
-    gameScreen.style.display = "block";
-
-    reset();
-}
-
-/* START */
-function startGame() {
-    document.getElementById("startScreen").style.display = "none";
-    playing = true;
-
-    if (!loopStarted) {
-        loopStarted = true;
-        requestAnimationFrame(loop);
-    }
-}
-
-/* RESET */
-function reset() {
-    ballY = 150;
-    velocity = 0;
-    score = 0;
-    playing = false;
-
-    ball.style.bottom = ballY + "px";
-    scoreEl.innerText = "0";
-
-    document.getElementById("startScreen").style.display = "flex";
-}
-
-/* JUMP */
-document.addEventListener("click", () => {
-    if (!playing) return;
+/* ПРЫЖОК */
+function jump() {
     velocity = jumpPower;
-});
+}
+
+/* только одно событие */
+tapZone.addEventListener("click", jump);
 
 /* LOOP */
 function loop() {
-    if (!loopStarted) return;
 
-    if (playing) {
+    velocity -= gravity;   // гравитация вниз
+    ballY += velocity;
 
-        velocity += gravity;
-        ballY += velocity;
-
-        // земля
-        if (ballY < 0) {
-            ballY = 0;
-            velocity = 0;
-        }
-
-        ball.style.bottom = ballY + "px";
-
-        score++;
-        scoreEl.innerText = score;
+    // земля
+    if (ballY < 0) {
+        ballY = 0;
+        velocity = 0;
     }
+
+    ball.style.bottom = ballY + "px";
 
     requestAnimationFrame(loop);
 }
+
+loop();

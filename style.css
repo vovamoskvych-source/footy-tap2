@@ -74,3 +74,8 @@ body {
     padding: 15px 30px;
     font-size: 20px;
 }
+#tapZone {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+}

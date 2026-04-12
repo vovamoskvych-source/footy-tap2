@@ -2,40 +2,31 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Ball Rush</title>
+<title>Ball Safe Test</title>
 
 <style>
 body {
     margin: 0;
     overflow: hidden;
-    background: linear-gradient(to top, #14532d, #22c55e);
+    background: #111;
 }
 
 #ball {
     position: absolute;
+    width: 60px;
+    height: 60px;
+    background: red;
+    border-radius: 50%;
     left: 100px;
     bottom: 0px;
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    background: white;
 }
 
-.obstacle {
+#debug {
     position: absolute;
-    bottom: 0;
-    width: 50px;
-    background: #b91c1c;
-    border-radius: 6px;
-}
-
-#score {
-    position: absolute;
-    top: 20px;
-    width: 100%;
-    text-align: center;
-    font-size: 35px;
+    top: 10px;
+    left: 10px;
     color: white;
+    font-size: 16px;
 }
 </style>
 </head>
@@ -43,80 +34,36 @@ body {
 <body>
 
 <div id="ball"></div>
-<div id="score">0</div>
+<div id="debug">loading...</div>
 
 <script>
+console.log("GAME START");
+
 const ball = document.getElementById("ball");
-const scoreEl = document.getElementById("score");
+const debug = document.getElementById("debug");
 
 let y = 0;
 let vy = 0;
 
-const gravity = 0.7;
-const jumpPower = 13;
+const gravity = 0.6;
+const jumpPower = 14;
 
-let canJump = true;
-
-let obstacles = [];
-let score = 0;
-
-/* ПРЫЖОК (ОДИН СТАБИЛЬНЫЙ) */
 window.addEventListener("pointerdown", () => {
-
-    if (canJump) {
-        vy = jumpPower;
-        canJump = false;
-    }
+    vy = jumpPower;
 });
 
-/* ПРЕПЯТСТВИЯ */
-setInterval(() => {
-
-    let o = document.createElement("div");
-    o.className = "obstacle";
-
-    let h = 60 + Math.random() * 90;
-
-    o.style.height = h + "px";
-    o.style.left = window.innerWidth + "px";
-
-    document.body.appendChild(o);
-    obstacles.push(o);
-
-}, 1500);
-
-/* ИГРА */
 function loop() {
-
     vy -= gravity;
     y += vy;
 
     if (y < 0) {
         y = 0;
         vy = 0;
-        canJump = true;
     }
 
     ball.style.bottom = y + "px";
 
-    obstacles.forEach((o, i) => {
-
-        let x = parseFloat(o.style.left);
-        x -= 4.5;
-        o.style.left = x + "px";
-
-        if (x < 140 && x > 90 && y < parseFloat(o.style.height)) {
-            alert("LOSE");
-            location.reload();
-        }
-
-        if (x < -100) {
-            o.remove();
-            obstacles.splice(i, 1);
-            score++;
-            scoreEl.innerText = score;
-        }
-    });
+    debug.innerText = "y: " + y.toFixed(2) + " vy: " + vy.toFixed(2);
 
     requestAnimationFrame(loop);
 }

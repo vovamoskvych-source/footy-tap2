@@ -25,10 +25,11 @@ body {
 }
 
 /* фон */
-.bg {
-    position: absolute;
+#btn {
+    position: fixed;
     inset: 0;
-    background: linear-gradient(to top, #14532d, #22c55e);
+    background: transparent;
+    border: none;
 }
 
 /* мяч */

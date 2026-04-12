@@ -15,13 +15,21 @@ body {
 #ball {
     position: absolute;
     left: 100px;
-    bottom: 150px;
+    bottom: 120px;
     width: 55px;
     height: 55px;
     border-radius: 50%;
     background:
-        radial-gradient(circle at 30% 30%, #fff, #ccc),
-        repeating-linear-gradient(45deg, #000 0 6px, #fff 6px 12px);
+        radial-gradient(circle at 30% 30%, #fff, #ccc);
+}
+
+/* БАРЬЕР */
+.obstacle {
+    position: absolute;
+    bottom: 0;
+    width: 50px;
+    background: linear-gradient(#ef4444, #7f1d1d);
+    border-radius: 8px;
 }
 
 /* СЧЁТ */
@@ -45,37 +53,70 @@ body {
 const ball = document.getElementById("ball");
 const scoreEl = document.getElementById("score");
 
-let ballY = 150;
-let velocity = 0;
+let x = 100;      // горизонталь мяча (фикс)
+let y = 120;      // высота
+let vy = 0;       // скорость по Y
 
-const gravity = 0.6;     // мягкая физика
-const jumpPower = 14;    // норм прыжок
+let gravity = 0.7;
+let jumpPower = 14;
 
-let jumpsLeft = 2;       // дабл прыжок
+let obstacles = [];
 let score = 0;
 
-/* ПРЫЖОК (ДАБЛ) */
+/* ПРЫЖОК (БЕЗ ДАБЛА) */
 window.addEventListener("pointerdown", () => {
-    if (jumpsLeft > 0) {
-        velocity = jumpPower;
-        jumpsLeft--;
+    if (y === 0) {
+        vy = jumpPower;
     }
 });
 
-/* ИГРОВОЙ ЦИКЛ */
+/* ПРЕПЯТСТВИЯ */
+setInterval(() => {
+    let obs = document.createElement("div");
+    obs.className = "obstacle";
+
+    let h = 60 + Math.random() * 80;
+    obs.style.height = h + "px";
+    obs.style.left = window.innerWidth + "px";
+
+    document.body.appendChild(obs);
+    obstacles.push(obs);
+}, 1500);
+
+/* ЛОГИКА */
 function loop() {
 
-    velocity -= gravity;
-    ballY += velocity;
+    // физика прыжка
+    vy -= gravity;
+    y += vy;
 
-    // земля
-    if (ballY < 0) {
-        ballY = 0;
-        velocity = 0;
-        jumpsLeft = 2; // сброс прыжков
+    if (y < 0) {
+        y = 0;
+        vy = 0;
     }
 
-    ball.style.bottom = ballY + "px";
+    ball.style.bottom = y + "px";
+
+    // движение препятствий
+    obstacles.forEach((o, i) => {
+        let ox = parseFloat(o.style.left);
+        ox -= 5;
+        o.style.left = ox + "px";
+
+        // столкновение
+        if (ox < 140 && ox > 90 && y < parseFloat(o.style.height)) {
+            alert("LOSE");
+            location.reload();
+        }
+
+        // удаление + счёт
+        if (ox < -100) {
+            o.remove();
+            obstacles.splice(i, 1);
+            score++;
+            scoreEl.innerText = score;
+        }
+    });
 
     requestAnimationFrame(loop);
 }

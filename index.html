@@ -1,81 +1,57 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Ball Rush</title>
-
-<style>
-body {
-    margin: 0;
-    overflow: hidden;
-    background: linear-gradient(to top, #14532d, #22c55e);
-}
-
-/* МЯЧ */
-#ball {
-    position: absolute;
-    left: 100px;
-    bottom: 120px;
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    background:
-        radial-gradient(circle at 30% 30%, #fff, #ccc);
-}
-
-/* БАРЬЕР */
-.obstacle {
-    position: absolute;
-    bottom: 0;
-    width: 50px;
-    background: linear-gradient(#ef4444, #7f1d1d);
-    border-radius: 8px;
-}
-
-/* СЧЁТ */
-#score {
-    position: absolute;
-    top: 20px;
-    width: 100%;
-    text-align: center;
-    font-size: 40px;
-    color: white;
-}
-</style>
-</head>
-
-<body>
-
-<div id="ball"></div>
-<div id="score">0</div>
-
 <script>
 const ball = document.getElementById("ball");
 const scoreEl = document.getElementById("score");
 
-let x = 100;      // горизонталь мяча (фикс)
-let y = 120;      // высота
-let vy = 0;       // скорость по Y
+let y = 0;
+let vy = 0;
 
-let gravity = 0.7;
-let jumpPower = 14;
+const gravity = 0.9;     // чуть сильнее падение = быстрее возвращение
+const jumpPower = 18;    // ВАЖНО: теперь высокий прыжок
+
+let canDoubleJump = true;
 
 let obstacles = [];
 let score = 0;
 
-/* ПРЫЖОК (БЕЗ ДАБЛА) */
+/* ПРЫЖОК + ДАБЛ */
 window.addEventListener("pointerdown", () => {
+
     if (y === 0) {
         vy = jumpPower;
+        canDoubleJump = true;
+    } 
+    else if (canDoubleJump) {
+        vy = jumpPower * 0.85; // второй слабее, но ощущается
+        canDoubleJump = false;
     }
 });
+
+/* ОБНОВЛЕНИЕ */
+function loop() {
+
+    vy -= gravity;
+    y += vy;
+
+    if (y < 0) {
+        y = 0;
+        vy = 0;
+        canDoubleJump = true;
+    }
+
+    ball.style.bottom = y + "px";
+
+    requestAnimationFrame(loop);
+}
+
+loop();
 
 /* ПРЕПЯТСТВИЯ */
 setInterval(() => {
     let obs = document.createElement("div");
     obs.className = "obstacle";
 
-    let h = 60 + Math.random() * 80;
+    let h = 70 + Math.random() * 90;
+
     obs.style.height = h + "px";
     obs.style.left = window.innerWidth + "px";
 
@@ -83,34 +59,18 @@ setInterval(() => {
     obstacles.push(obs);
 }, 1500);
 
-/* ЛОГИКА */
-function loop() {
-
-    // физика прыжка
-    vy -= gravity;
-    y += vy;
-
-    if (y < 0) {
-        y = 0;
-        vy = 0;
-    }
-
-    ball.style.bottom = y + "px";
-
-    // движение препятствий
+function move() {
     obstacles.forEach((o, i) => {
-        let ox = parseFloat(o.style.left);
-        ox -= 5;
-        o.style.left = ox + "px";
+        let x = parseFloat(o.style.left);
+        x -= 5;
+        o.style.left = x + "px";
 
-        // столкновение
-        if (ox < 140 && ox > 90 && y < parseFloat(o.style.height)) {
+        if (x < 140 && x > 90 && y < parseFloat(o.style.height)) {
             alert("LOSE");
             location.reload();
         }
 
-        // удаление + счёт
-        if (ox < -100) {
+        if (x < -100) {
             o.remove();
             obstacles.splice(i, 1);
             score++;
@@ -118,11 +78,8 @@ function loop() {
         }
     });
 
-    requestAnimationFrame(loop);
+    requestAnimationFrame(move);
 }
 
-loop();
+move();
 </script>
-
-</body>
-</html>

@@ -1,5 +1,4 @@
 const ball = document.getElementById("ball");
-const btn = document.getElementById("jumpBtn");
 
 let ballY = 150;
 let velocity = 0;
@@ -7,9 +6,10 @@ let velocity = 0;
 const gravity = 0.8;
 const jumpPower = 12;
 
-btn.onclick = () => {
+/* 🔥 ВОТ КЛЮЧ */
+window.addEventListener("pointerdown", () => {
     velocity = jumpPower;
-};
+});
 
 /* LOOP */
 function loop() {

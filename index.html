@@ -1,3 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ball Rush</title>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: linear-gradient(to top, #14532d, #22c55e);
+}
+
+#ball {
+    position: absolute;
+    left: 100px;
+    bottom: 120px;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: white;
+}
+
+.obstacle {
+    position: absolute;
+    bottom: 0;
+    width: 50px;
+    background: #b91c1c;
+}
+
+#score {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 40px;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<div id="ball"></div>
+<div id="score">0</div>
+
 <script>
 const ball = document.getElementById("ball");
 const scoreEl = document.getElementById("score");
@@ -5,28 +51,39 @@ const scoreEl = document.getElementById("score");
 let y = 0;
 let vy = 0;
 
-const gravity = 0.9;     // чуть сильнее падение = быстрее возвращение
-const jumpPower = 18;    // ВАЖНО: теперь высокий прыжок
+const gravity = 0.8;
+const jumpPower = 15;
 
-let canDoubleJump = true;
+let canDouble = true;
 
 let obstacles = [];
 let score = 0;
 
-/* ПРЫЖОК + ДАБЛ */
+/* ПРЫЖОК */
 window.addEventListener("pointerdown", () => {
-
     if (y === 0) {
         vy = jumpPower;
-        canDoubleJump = true;
-    } 
-    else if (canDoubleJump) {
-        vy = jumpPower * 0.85; // второй слабее, но ощущается
-        canDoubleJump = false;
+        canDouble = true;
+    } else if (canDouble) {
+        vy = jumpPower * 0.85;
+        canDouble = false;
     }
 });
 
-/* ОБНОВЛЕНИЕ */
+/* ПРЕПЯТСТВИЯ */
+setInterval(() => {
+    let o = document.createElement("div");
+    o.className = "obstacle";
+
+    let h = 60 + Math.random() * 90;
+    o.style.height = h + "px";
+    o.style.left = window.innerWidth + "px";
+
+    document.body.appendChild(o);
+    obstacles.push(o);
+}, 1500);
+
+/* ФИЗИКА */
 function loop() {
 
     vy -= gravity;
@@ -35,31 +92,11 @@ function loop() {
     if (y < 0) {
         y = 0;
         vy = 0;
-        canDoubleJump = true;
+        canDouble = true;
     }
 
     ball.style.bottom = y + "px";
 
-    requestAnimationFrame(loop);
-}
-
-loop();
-
-/* ПРЕПЯТСТВИЯ */
-setInterval(() => {
-    let obs = document.createElement("div");
-    obs.className = "obstacle";
-
-    let h = 70 + Math.random() * 90;
-
-    obs.style.height = h + "px";
-    obs.style.left = window.innerWidth + "px";
-
-    document.body.appendChild(obs);
-    obstacles.push(obs);
-}, 1500);
-
-function move() {
     obstacles.forEach((o, i) => {
         let x = parseFloat(o.style.left);
         x -= 5;
@@ -78,8 +115,11 @@ function move() {
         }
     });
 
-    requestAnimationFrame(move);
+    requestAnimationFrame(loop);
 }
 
-move();
+loop();
 </script>
+
+</body>
+</html>

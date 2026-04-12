@@ -8,18 +8,39 @@
 body {
     margin: 0;
     overflow: hidden;
-    background: #111;
+    background: linear-gradient(to top, #14532d, #22c55e);
 }
 
-/* мяч */
+/* МЯЧ */
 #ball {
     position: absolute;
     left: 100px;
     bottom: 150px;
-    width: 60px;
-    height: 60px;
-    background: white;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
+    background:
+        radial-gradient(circle at 30% 30%, #fff, #ccc),
+        repeating-linear-gradient(45deg, #000 0 6px, #fff 6px 12px);
+}
+
+/* ПРЕПЯТСТВИЯ */
+.obstacle {
+    position: absolute;
+    width: 50px;
+    background: linear-gradient(#ef4444, #7f1d1d);
+    border-radius: 8px;
+    bottom: 0;
+}
+
+/* СЧЁТ */
+#score {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 40px;
+    color: white;
 }
 </style>
 
@@ -28,9 +49,11 @@ body {
 <body>
 
 <div id="ball"></div>
+<div id="score">0</div>
 
 <script>
 const ball = document.getElementById("ball");
+const scoreEl = document.getElementById("score");
 
 let ballY = 150;
 let velocity = 0;
@@ -38,12 +61,21 @@ let velocity = 0;
 const gravity = 0.8;
 const jumpPower = 12;
 
-/* НАЖАТИЕ */
+let jumps = 0;
+let score = 0;
+
+let obstacles = [];
+
+/* ПРЫЖОК + ДАБЛ */
 window.addEventListener("pointerdown", () => {
-    velocity = jumpPower;
+
+    if (jumps < 2) {
+        velocity = jumpPower;
+        jumps++;
+    }
 });
 
-/* LOOP */
+/* ФИЗИКА */
 function loop() {
 
     velocity -= gravity;
@@ -52,11 +84,56 @@ function loop() {
     if (ballY < 0) {
         ballY = 0;
         velocity = 0;
+        jumps = 0; // сброс прыжков
     }
 
     ball.style.bottom = ballY + "px";
 
+    moveObstacles();
+
     requestAnimationFrame(loop);
+}
+
+/* СОЗДАНИЕ ПРЕПЯТСТВИЙ */
+setInterval(() => {
+    createObstacle();
+}, 1800);
+
+function createObstacle() {
+    const obs = document.createElement("div");
+    obs.classList.add("obstacle");
+
+    let height = 60 + Math.random() * 80;
+
+    obs.style.height = height + "px";
+    obs.style.left = window.innerWidth + "px";
+
+    document.body.appendChild(obs);
+    obstacles.push(obs);
+}
+
+/* ДВИЖЕНИЕ ПРЕПЯТСТВИЙ */
+function moveObstacles() {
+
+    obstacles.forEach((obs, index) => {
+        let x = parseFloat(obs.style.left);
+        x -= 6;
+        obs.style.left = x + "px";
+
+        // столкновение
+        if (x < 130 && x > 80 && ballY < parseFloat(obs.style.height)) {
+            alert("LOSE");
+            location.reload();
+        }
+
+        // удаление
+        if (x < -100) {
+            obs.remove();
+            obstacles.splice(index, 1);
+            score++;
+            scoreEl.innerText = score;
+        }
+    });
 }
 
 loop();

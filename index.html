@@ -59,19 +59,16 @@ let ballY = 150;
 let velocity = 0;
 
 const gravity = 0.8;
-const jumpPower = 12;
+const jumpPower = 20;
 
-let jumps = 0;
 let score = 0;
 
 let obstacles = [];
 
 /* ПРЫЖОК + ДАБЛ */
 window.addEventListener("pointerdown", () => {
-
-    if (jumps < 2) {
+    if (ballY === 0) {
         velocity = jumpPower;
-        jumps++;
     }
 });
 
@@ -117,7 +114,7 @@ function moveObstacles() {
 
     obstacles.forEach((obs, index) => {
         let x = parseFloat(obs.style.left);
-        x -= 6;
+        x -= 4;
         obs.style.left = x + "px";
 
         // столкновение

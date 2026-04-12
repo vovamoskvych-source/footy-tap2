@@ -1,1 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ball Rush</title>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #111;
+}
+
+/* мяч */
+#ball {
+    position: absolute;
+    left: 100px;
+    bottom: 150px;
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+}
+</style>
+
+</head>
+
+<body>
+
 <div id="ball"></div>
+
+<script>
+const ball = document.getElementById("ball");
+
+let ballY = 150;
+let velocity = 0;
+
+const gravity = 0.8;
+const jumpPower = 12;
+
+/* НАЖАТИЕ */
+window.addEventListener("pointerdown", () => {
+    velocity = jumpPower;
+});
+
+/* LOOP */
+function loop() {
+
+    velocity -= gravity;
+    ballY += velocity;
+
+    if (ballY < 0) {
+        ballY = 0;
+        velocity = 0;
+    }
+
+    ball.style.bottom = ballY + "px";
+
+    requestAnimationFrame(loop);
+}
+
+loop();
+</script>
+
+</body>
+</html>

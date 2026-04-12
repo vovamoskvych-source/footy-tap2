@@ -28,8 +28,15 @@ body {
 #btn {
     position: fixed;
     inset: 0;
+
     background: transparent;
     border: none;
+    outline: none;
+
+    z-index: 1;
+
+    /* убираем все эффекты кнопки */
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* мяч */
@@ -79,4 +86,8 @@ body {
     position: absolute;
     inset: 0;
     z-index: 5;
+}
+body {
+    user-select: none;
+    -webkit-user-select: none;
 }

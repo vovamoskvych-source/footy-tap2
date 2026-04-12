@@ -8,9 +8,10 @@ const gravity = 0.8;
 const jumpPower = 12;
 
 /* ПРЫЖОК ЧЕРЕЗ КНОПКУ */
-btn.onclick = () => {
+const tap = document.getElementById("tap");
+
+tap.onclick = () => {
     velocity = jumpPower;
-    console.log("jump");
 };
 
 /* LOOP */

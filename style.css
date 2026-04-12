@@ -82,11 +82,18 @@ body {
     padding: 15px 30px;
     font-size: 20px;
 }
-#tapZone {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
+#tap {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+
+    z-index: 9999 !important;
+
+    background: transparent !important;
 }
+
 body {
     user-select: none;
     -webkit-user-select: none;

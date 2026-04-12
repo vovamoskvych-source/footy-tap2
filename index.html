@@ -2,33 +2,39 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Ball Fix</title>
+<title>Ball Rush</title>
 
 <style>
 body {
     margin: 0;
     overflow: hidden;
-    background: #14532d;
+    background: linear-gradient(to top, #14532d, #22c55e);
 }
 
-/* МЯЧ */
 #ball {
     position: absolute;
     left: 100px;
-    bottom: 100px;
-    width: 60px;
-    height: 60px;
-    background: red;
+    bottom: 0px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
+    background: white;
 }
 
-/* СЧЁТ */
+.obstacle {
+    position: absolute;
+    bottom: 0;
+    width: 50px;
+    background: #b91c1c;
+    border-radius: 6px;
+}
+
 #score {
     position: absolute;
     top: 20px;
     width: 100%;
     text-align: center;
-    font-size: 30px;
+    font-size: 35px;
     color: white;
 }
 </style>
@@ -37,38 +43,84 @@ body {
 <body>
 
 <div id="ball"></div>
-<div id="score">BALL TEST</div>
+<div id="score">0</div>
 
 <script>
-console.log("SCRIPT STARTED");
-
 const ball = document.getElementById("ball");
-
-if (!ball) {
-    alert("BALL NOT FOUND");
-}
+const scoreEl = document.getElementById("score");
 
 let y = 0;
 let vy = 0;
 
-const gravity = 0.6;
-const jumpPower = 15;
+const gravity = 0.7;     // мягкая дуга
+const jumpPower = 14;
 
+let canDouble = true;
+
+let obstacles = [];
+let score = 0;
+
+/* ПРЫЖОК */
 window.addEventListener("pointerdown", () => {
-    console.log("CLICK");
-    vy = jumpPower;
+
+    if (y === 0) {
+        vy = jumpPower;
+        canDouble = true;
+    }
+    else if (canDouble) {
+        vy = jumpPower * 0.8;
+        canDouble = false;
+    }
 });
 
+/* ПРЕПЯТСТВИЯ */
+setInterval(() => {
+
+    let o = document.createElement("div");
+    o.className = "obstacle";
+
+    let h = 60 + Math.random() * 90;
+    o.style.height = h + "px";
+    o.style.left = window.innerWidth + "px";
+
+    document.body.appendChild(o);
+    obstacles.push(o);
+
+}, 1600);
+
+/* ИГРА */
 function loop() {
-    vy -= gravity;
+
+    // физика (ВАЖНО: сначала вверх, потом гравитация)
     y += vy;
+    vy -= gravity;
 
     if (y < 0) {
         y = 0;
         vy = 0;
+        canDouble = true;
     }
 
     ball.style.bottom = y + "px";
+
+    // движение барьеров
+    obstacles.forEach((o, i) => {
+        let x = parseFloat(o.style.left);
+        x -= 4.5;
+        o.style.left = x + "px";
+
+        if (x < 140 && x > 90 && y < parseFloat(o.style.height)) {
+            alert("LOSE");
+            location.reload();
+        }
+
+        if (x < -100) {
+            o.remove();
+            obstacles.splice(i, 1);
+            score++;
+            scoreEl.innerText = score;
+        }
+    });
 
     requestAnimationFrame(loop);
 }

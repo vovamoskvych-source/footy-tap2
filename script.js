@@ -1,5 +1,5 @@
 const ball = document.getElementById("ball");
-const tap = document.getElementById("tap");
+const btn = document.getElementById("jumpBtn");
 
 let ballY = 150;
 let velocity = 0;
@@ -7,12 +7,12 @@ let velocity = 0;
 const gravity = 0.8;
 const jumpPower = 12;
 
-tap.onclick = () => {
+btn.onclick = () => {
     velocity = jumpPower;
 };
 
+/* LOOP */
 function loop() {
-
     velocity -= gravity;
     ballY += velocity;
 

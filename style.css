@@ -1,103 +1,29 @@
 body {
     margin: 0;
-    font-family: Arial;
-    background: #0f172a;
-    color: white;
-}
-
-/* MAIN */
-#main {
-    padding: 20px;
-}
-
-.card {
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 15px;
-}
-
-/* GAME */
-#gameScreen {
-    display: none;
-    position: fixed;
-    inset: 0;
     overflow: hidden;
 }
 
-/* фон */
-#btn {
-    position: fixed;
-    inset: 0;
-
-    background: transparent;
-    border: none;
-    outline: none;
-
-    z-index: 1;
-
-    /* убираем все эффекты кнопки */
-    -webkit-tap-highlight-color: transparent;
-}
-
-/* мяч */
-#ball {
-    position: absolute !important;
-
-    left: 100px !important;
-    bottom: 150px !important;
-
-    top: auto !important;
-    transform: none !important;
-
-    width: 50px;
-    height: 50px;
-
-    border-radius: 50%;
-    background: white;
-
-    z-index: 9999;
-}
-
-
-/* score */
-#score {
-    position: absolute;
-    top: 20px;
-    width: 100%;
-    text-align: center;
-    font-size: 40px;
-    color: #00ff88;
-}
-
-/* start */
-#startScreen {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#startScreen button {
-    padding: 15px 30px;
-    font-size: 20px;
-}
-#tap {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    background: transparent;
-}
-
+/* МЯЧ */
 #ball {
     position: absolute;
     left: 100px;
     bottom: 150px;
     width: 60px;
     height: 60px;
-    border-radius: 50%;
-
     background: white;
+    border-radius: 50%;
+    z-index: 10;
+}
 
-    z-index: 10; /* ВАЖНО: ВЫШЕ чем tap */
+/* КНОПКА = ВСЁ ПОЛЕ */
+#jumpBtn {
+    position: fixed;
+    inset: 0;
+    background: transparent;
+    border: none;
+    z-index: 1;
+
+    /* убираем визуал */
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }

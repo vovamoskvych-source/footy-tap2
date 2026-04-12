@@ -1,29 +1,24 @@
 const ball = document.getElementById("ball");
-const tapZone = document.getElementById("tapZone");
+const btn = document.getElementById("btn");
 
 let ballY = 150;
 let velocity = 0;
 
 const gravity = 0.8;
-const jumpPower = 12; // вверх
+const jumpPower = 12;
 
-let playing = true;
-
-/* ПРЫЖОК */
-function jump() {
+/* ПРЫЖОК ЧЕРЕЗ КНОПКУ */
+btn.onclick = () => {
     velocity = jumpPower;
-}
-
-/* только одно событие */
-tapZone.addEventListener("click", jump);
+    console.log("jump");
+};
 
 /* LOOP */
 function loop() {
 
-    velocity -= gravity;   // гравитация вниз
+    velocity -= gravity;
     ballY += velocity;
 
-    // земля
     if (ballY < 0) {
         ballY = 0;
         velocity = 0;

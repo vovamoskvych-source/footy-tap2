@@ -1,39 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Ball Rush</title>
-<link rel="stylesheet" href="style.css">
+<title>Ball Test</title>
+
+<style>
+body { margin:0; background:#111; color:white; }
+
+#ball {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: red;
+    border-radius: 50%;
+    left: 100px;
+    bottom: 150px;
+}
+
+#btn {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 20px;
+    font-size: 20px;
+}
+</style>
+
 </head>
 
 <body>
 
-<!-- MAIN MENU -->
-<div id="main">
-    <div class="card">
-        <h2>⚽ Footy Coin</h2>
-        <div id="coins">0 FC</div>
+<div id="ball"></div>
 
-        <button onclick="openGame()">PLAY</button>
-    </div>
-</div>
-
-<!-- GAME -->
-<div id="gameScreen">
-
-    <div class="bg"></div>
-   
-    <div id="tapZone"></div>
-
-    <div id="ball"></div>
-
-    <div id="score">0</div>
-
-    <div id="startScreen">
-        <button onclick="startGame()">START</button>
-    </div>
-
-</div>
+<button id="btn">JUMP</button>
 
 <script src="script.js"></script>
 

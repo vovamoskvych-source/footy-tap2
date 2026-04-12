@@ -2,42 +2,33 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Ball Rush</title>
+<title>Ball Debug Safe</title>
 
 <style>
 body {
     margin: 0;
     overflow: hidden;
-    background: linear-gradient(to top, #14532d, #22c55e);
+    background: #14532d;
 }
 
 #ball {
     position: absolute;
     left: 100px;
     bottom: 0px;
-    width: 55px;
-    height: 55px;
+    width: 60px;
+    height: 60px;
+    background: red;
     border-radius: 50%;
-    background: white;
+    z-index: 10;
 }
 
-/* БАРЬЕРЫ */
-.obstacle {
+#debug {
     position: absolute;
-    bottom: 0;
-    width: 50px;
-    background: #b91c1c;
-    border-radius: 6px;
-}
-
-/* СЧЁТ */
-#score {
-    position: absolute;
-    top: 20px;
-    width: 100%;
-    text-align: center;
-    font-size: 35px;
+    top: 10px;
+    left: 10px;
     color: white;
+    font-size: 14px;
+    z-index: 999;
 }
 </style>
 </head>
@@ -45,90 +36,47 @@ body {
 <body>
 
 <div id="ball"></div>
-<div id="score">0</div>
+<div id="debug">loading...</div>
 
 <script>
 const ball = document.getElementById("ball");
-const scoreEl = document.getElementById("score");
+const debug = document.getElementById("debug");
 
 let y = 0;
 let vy = 0;
 
-const gravity = 0.7;
-const jumpPower = 15;
+const gravity = 0.6;
+const jumpPower = 14;
 
-let canDouble = false;
+let canJump = true;
 
-let obstacles = [];
-let score = 0;
-
-/* ПРЫЖОК + ДАБЛ */
+/* ПРЫЖОК */
 window.addEventListener("pointerdown", () => {
-
-    if (y === 0) {
+    if (canJump) {
         vy = jumpPower;
-        canDouble = true;
-    }
-    else if (canDouble) {
-        vy = jumpPower * 0.85;
-        canDouble = false;
+        canJump = false;
     }
 });
 
-/* БАРЬЕРЫ */
-setInterval(() => {
-
-    const o = document.createElement("div");
-    o.className = "obstacle";
-
-    const h = 60 + Math.random() * 90;
-
-    o.style.height = h + "px";
-    o.style.left = window.innerWidth + "px";
-
-    document.body.appendChild(o);
-    obstacles.push(o);
-
-}, 1400);
-
-/* ИГРА */
 function loop() {
 
-    // физика (дуга)
     vy -= gravity;
     y += vy;
+
+    // ЖЁСТКАЯ ЗАЩИТА ОТ УЛЁТА
+    if (y > 300) y = 300;
 
     if (y < 0) {
         y = 0;
         vy = 0;
-        canDouble = false;
+        canJump = true;
     }
 
     ball.style.bottom = y + "px";
 
-    // движение барьеров
-    obstacles.forEach((o, i) => {
-
-        let x = parseFloat(o.style.left);
-        x -= 5;
-        o.style.left = x + "px";
-
-        let h = parseFloat(o.style.height);
-
-        // столкновение
-        if (x < 140 && x > 90 && y < h) {
-            alert("LOSE");
-            location.reload();
-        }
-
-        // удаление + счёт
-        if (x < -100) {
-            o.remove();
-            obstacles.splice(i, 1);
-            score++;
-            scoreEl.innerText = score;
-        }
-    });
+    debug.innerText =
+        "y=" + y.toFixed(1) +
+        " vy=" + vy.toFixed(1);
 
     requestAnimationFrame(loop);
 }

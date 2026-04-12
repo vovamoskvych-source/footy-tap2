@@ -1,5 +1,5 @@
 const ball = document.getElementById("ball");
-const btn = document.getElementById("btn");
+const tap = document.getElementById("tap");
 
 let ballY = 150;
 let velocity = 0;
@@ -7,14 +7,10 @@ let velocity = 0;
 const gravity = 0.8;
 const jumpPower = 12;
 
-/* ПРЫЖОК ЧЕРЕЗ КНОПКУ */
-const tap = document.getElementById("tap");
-
 tap.onclick = () => {
     velocity = jumpPower;
 };
 
-/* LOOP */
 function loop() {
 
     velocity -= gravity;

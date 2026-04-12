@@ -2,40 +2,23 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Ball Rush</title>
+<title>TEST</title>
 
 <style>
 body {
     margin: 0;
+    background: #111;
     overflow: hidden;
-    background: linear-gradient(to top, #14532d, #22c55e);
 }
 
 #ball {
     position: absolute;
-    left: 100px;
-    bottom: 0px;
-    width: 55px;
-    height: 55px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    background: white;
-}
-
-.obstacle {
-    position: absolute;
-    bottom: 0;
-    width: 50px;
-    background: #b91c1c;
-    border-radius: 6px;
-}
-
-#score {
-    position: absolute;
-    top: 20px;
-    width: 100%;
-    text-align: center;
-    font-size: 35px;
-    color: white;
+    background: red;
+    left: 100px;
+    bottom: 100px;
 }
 </style>
 </head>
@@ -43,89 +26,24 @@ body {
 <body>
 
 <div id="ball"></div>
-<div id="score">0</div>
 
 <script>
+console.log("SCRIPT IS RUNNING");
+
 const ball = document.getElementById("ball");
-const scoreEl = document.getElementById("score");
 
-let y = 0;
-let vy = 0;
-
-const gravity = 0.7;     // мягкая дуга
-const jumpPower = 14;
-
-let canDouble = true;
-
-let obstacles = [];
-let score = 0;
-
-/* ПРЫЖОК */
-window.addEventListener("pointerdown", () => {
-
-    if (y === 0) {
-        vy = jumpPower;
-        canDouble = true;
-    }
-    else if (canDouble) {
-        vy = jumpPower * 0.8;
-        canDouble = false;
-    }
-});
-
-/* ПРЕПЯТСТВИЯ */
-setInterval(() => {
-
-    let o = document.createElement("div");
-    o.className = "obstacle";
-
-    let h = 60 + Math.random() * 90;
-    o.style.height = h + "px";
-    o.style.left = window.innerWidth + "px";
-
-    document.body.appendChild(o);
-    obstacles.push(o);
-
-}, 1600);
-
-/* ИГРА */
-function loop() {
-
-    // физика (ВАЖНО: сначала вверх, потом гравитация)
-    y += vy;
-    vy -= gravity;
-
-    if (y < 0) {
-        y = 0;
-        vy = 0;
-        canDouble = true;
-    }
-
-    ball.style.bottom = y + "px";
-
-    // движение барьеров
-    obstacles.forEach((o, i) => {
-        let x = parseFloat(o.style.left);
-        x -= 4.5;
-        o.style.left = x + "px";
-
-        if (x < 140 && x > 90 && y < parseFloat(o.style.height)) {
-            alert("LOSE");
-            location.reload();
-        }
-
-        if (x < -100) {
-            o.remove();
-            obstacles.splice(i, 1);
-            score++;
-            scoreEl.innerText = score;
-        }
-    });
-
-    requestAnimationFrame(loop);
+if (!ball) {
+    alert("BALL NOT FOUND");
 }
 
-loop();
+let y = 0;
+
+setInterval(() => {
+    y += 2;
+    ball.style.bottom = y + "px";
+    console.log("BALL Y:", y);
+}, 30);
+
 </script>
 
 </body>
